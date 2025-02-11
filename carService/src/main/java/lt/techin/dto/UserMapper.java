@@ -8,7 +8,7 @@ import java.util.List;
 public class UserMapper {
     public static List<UserDTO> toUserDTOList(List<User> userList) {
         return userList.stream()
-                .map(user -> new UserDTO(user.getUsername(), user.getPassword(), RoleMapper.toRoleDTOList(user), RentalMapper.toRentalDTOLIst(user)))
+                .map(user -> new UserDTO(user.getUsername(), user.getPassword(), RoleMapper.toRoleDTOList(user), RentalMapper.toRentalDTOList(user)))
                 .toList();
     }
 
@@ -23,7 +23,7 @@ public class UserMapper {
     }
 
     public static UserDTO toUserDTO(User user) {
-        return new UserDTO(user.getUsername(), user.getPassword(), RoleMapper.toRoleDTOList(user), RentalMapper.toRentalDTOLIst(user));
+        return new UserDTO(user.getUsername(), user.getPassword(), RoleMapper.toRoleDTOList(user), RentalMapper.toRentalDTOList(user));
     }
 
     public static void updateUserFromDTO(User user, UserDTO userDTO) {

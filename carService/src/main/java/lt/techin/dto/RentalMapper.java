@@ -1,12 +1,13 @@
 package lt.techin.dto;
 
 import lt.techin.model.Rental;
+import lt.techin.model.User;
 
 import java.util.List;
 
 public class RentalMapper {
-    public static List<RentalDTO> toRentalDTOList(List<Rental> rentals) {
-        return rentals.stream()
+    public static List<RentalDTO> toRentalDTOList(User user) {
+        return user.getRentals().stream()
                 .map(RentalMapper::toRentalDTO)
                 .toList();
     }
