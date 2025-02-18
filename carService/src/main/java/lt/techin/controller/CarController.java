@@ -8,6 +8,7 @@ import lt.techin.service.CarService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -24,9 +25,17 @@ public class CarController {
         this.carService = carService;
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
     @GetMapping("/cars")
     public ResponseEntity<List<CarRequestDTO>> getCars() {
         return ResponseEntity.ok(CarRequestMapper.toCarDTOList(carService.findAllCars()));
+    }
+
+    @GetMapping("/cars/available")
+    public ResponseEntity<List<CarResponseDTO>> getAvailableCars() {
+        return ResponseEntity.ok(CarResponseMapper.toCarResponseDTOList(carService.findAllCars().stream()
+                .filter(i -> i.getStatus().equals(CarStatus.valueOf("AVAILABLE")))
+                .toList()));
     }
 
     @GetMapping("/cars/{id}")
