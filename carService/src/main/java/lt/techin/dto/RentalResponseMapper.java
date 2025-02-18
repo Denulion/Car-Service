@@ -9,10 +9,11 @@ public class RentalResponseMapper {
 
 
     public static RentalResponseDTO toRentalResponseDTO(Rental rental) {
-
+        return new RentalResponseDTO(rental.getId(), UserResponseMapper.toUserResponseDTO(rental.getUser()),
+                CarResponseMapper.toCarResponseDTO(rental.getCar()), rental.getRentalStart());
     }
 
-    public static List<RentalResponseDTO> toRentalResponseDTOList(User user) {
-
-    }
+//    public static List<RentalResponseDTO> toRentalResponseDTOList(User user) {
+//        return
+//    }
 }

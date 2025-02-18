@@ -5,11 +5,14 @@ import lt.techin.dto.CarRequestMapper;
 import lt.techin.dto.RentalRequestDTO;
 import lt.techin.dto.RentalRequestMapper;
 import lt.techin.dto.RentalResponseMapper;
+import lt.techin.model.CarStatus;
 import lt.techin.model.Rental;
 import lt.techin.model.User;
 import lt.techin.service.RentalService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,12 +31,21 @@ public class RentalController {
         this.rentalService = rentalService;
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_ROLE_USER')")
     @PostMapping("/rentals")
     public ResponseEntity<?> addRental(@Valid @RequestBody RentalRequestDTO rentalRequestDTO, Authentication authentication) {
 
-        Rental rental = RentalRequestMapper.toRental(rentalRequestDTO);
         User user = (User) authentication.getPrincipal();
-        rental.setUser(user);
+
+        if (user.getRentals().size() >= 2) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("You already have 2 cars rented!");
+        }
+
+        Rental rental = RentalRequestMapper.toRental(rentalRequestDTO, user);
+
+        if (rental.getCar().getStatus().equals(CarStatus.valueOf("RENTED"))) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("This car is already rented!");
+        }
 
         Rental savedRental = rentalService.save(rental);
 
