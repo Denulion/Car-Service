@@ -4,30 +4,29 @@ import lt.techin.model.Car;
 
 import java.util.List;
 
-public class CarMapper {
-    public static List<CarDTO> toCarDTOList(List<Car> carList) {
+public class CarRequestMapper {
+    public static List<CarRequestDTO> toCarDTOList(List<Car> carList) {
         return carList.stream()
-                .map(car -> new CarDTO(car.getId(), car.getBrand(), car.getModel(), car.getYear(), car.getStatus()))
+                .map(car -> new CarRequestDTO(car.getBrand(), car.getModel(), car.getYear()))
                 .toList();
     }
 
-    public static Car toCar(CarDTO carDTO) {
+    public static Car toCar(CarRequestDTO carRequestDTO) {
         Car car = new Car();
 
-        updateCarFromDTO(car, carDTO);
+        updateCarFromDTO(car, carRequestDTO);
 
         return car;
     }
 
-    public static CarDTO toCarDTO(Car car) {
-        return new CarDTO(car.getId(), car.getBrand(), car.getModel(), car.getYear(), car.getStatus());
+    public static CarRequestDTO toCarDTO(Car car) {
+        return new CarRequestDTO(car.getBrand(), car.getModel(), car.getYear());
     }
 
-    public static void updateCarFromDTO(Car car, CarDTO carDTO) {
-        car.setId(carDTO.id());
-        car.setBrand(carDTO.brand());
-        car.setModel(carDTO.model());
-        car.setYear(carDTO.year());
-        car.setStatus(carDTO.status());
+    public static void updateCarFromDTO(Car car, CarRequestDTO carRequestDTO) {
+
+        car.setBrand(carRequestDTO.brand());
+        car.setModel(carRequestDTO.model());
+        car.setYear(carRequestDTO.year());
     }
 }

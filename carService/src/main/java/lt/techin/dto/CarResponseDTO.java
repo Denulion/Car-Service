@@ -1,4 +1,10 @@
 package lt.techin.dto;
 
-public record CarResponseDTO() {
+import lt.techin.model.CarStatus;
+
+public record CarResponseDTO(long id,
+                             String brand,
+                             String model,
+                             int year,
+                             CarStatus status) {
 }
