@@ -1,9 +1,9 @@
 package lt.techin.controller;
 
 import jakarta.validation.Valid;
-import lt.techin.dto.UserDTO;
-import lt.techin.dto.UserMapper;
-import lt.techin.dto.UserPostResponseMapper;
+import lt.techin.dto.UserRequestDTO;
+import lt.techin.dto.UserRequestMapper;
+import lt.techin.dto.UserResponseMapper;
 import lt.techin.model.User;
 import lt.techin.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,32 +34,32 @@ public class UserController {
 
     @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
     @GetMapping("/users")
-    public ResponseEntity<List<UserDTO>> getUsers() {
-        return ResponseEntity.ok(UserMapper.toUserDTOList(userService.findAllUsers()));
+    public ResponseEntity<List<UserRequestDTO>> getUsers() {
+        return ResponseEntity.ok(UserRequestMapper.toUserDTOList(userService.findAllUsers()));
     }
 
     @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
     @GetMapping("/users/{id}")
-    public ResponseEntity<UserDTO> getUser(@PathVariable long id) {
+    public ResponseEntity<UserRequestDTO> getUser(@PathVariable long id) {
         Optional<User> foundUser = userService.findUserById(id);
         if (foundUser.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(UserMapper.toUserDTO(foundUser.get()));
+        return ResponseEntity.ok(UserRequestMapper.toUserDTO(foundUser.get()));
     }
 
     @PostMapping("/users")
-    public ResponseEntity<?> addUser(@Valid @RequestBody UserDTO userDTO, Authentication authentication) {
+    public ResponseEntity<?> addUser(@Valid @RequestBody UserRequestDTO userRequestDTO, Authentication authentication) {
 
         if (authentication != null && authentication.isAuthenticated()) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You are already registered!");
         }
 
-        if (userService.existsUserByUsername(userDTO.username())) {
+        if (userService.existsUserByUsername(userRequestDTO.username())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User with this username already exists!");
         }
 
-        User user = UserMapper.toUser(userDTO);
+        User user = UserRequestMapper.toUser(userRequestDTO);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         User savedUser = userService.saveUser(user);
@@ -69,34 +69,34 @@ public class UserController {
                                 .path("/{id}")
                                 .buildAndExpand(savedUser.getId())
                                 .toUri())
-                .body(UserPostResponseMapper.toUserPostResponseDTO(savedUser));
+                .body(UserResponseMapper.toUserResponseDTO(savedUser));
     }
 
     @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
     @PutMapping("/users/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable long id, @Valid @RequestBody UserDTO userDTO) {
+    public ResponseEntity<?> updateUser(@PathVariable long id, @Valid @RequestBody UserRequestDTO userRequestDTO) {
         if (userService.existsUserById(id)) {
             User userFromDB = userService.findUserById(id).get();
 
-            UserMapper.updateUserFromDTO(userFromDB, userDTO);
+            UserRequestMapper.updateUserFromDTO(userFromDB, userRequestDTO);
 
             userService.saveUser(userFromDB);
 
-            return ResponseEntity.ok(userDTO);
+            return ResponseEntity.ok(UserResponseMapper.toUserResponseDTO(userFromDB));
         }
 
-        if (userService.existsUserByUsername(userDTO.username())) {
+        if (userService.existsUserByUsername(userRequestDTO.username())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("A user with this username already exists!");
         }
 
-        User savedUser = userService.saveUser(UserMapper.toUser(userDTO));
+        User savedUser = userService.saveUser(UserRequestMapper.toUser(userRequestDTO));
 
         return ResponseEntity.created(
                         ServletUriComponentsBuilder.fromCurrentRequest()
                                 .replacePath("/api/movies/{id}")
                                 .buildAndExpand(savedUser.getId())
                                 .toUri())
-                .body(UserMapper.toUserDTO(savedUser));
+                .body(UserResponseMapper.toUserResponseDTO(savedUser));
     }
 
     @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")

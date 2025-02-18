@@ -34,7 +34,7 @@ public class CarController {
     @GetMapping("/cars/available")
     public ResponseEntity<List<CarResponseDTO>> getAvailableCars() {
         return ResponseEntity.ok(CarResponseMapper.toCarResponseDTOList(carService.findAllCars().stream()
-                .filter(i -> i.getStatus().equals(CarStatus.valueOf("AVAILABLE")))
+                .filter(car -> car.getStatus().equals(CarStatus.valueOf("AVAILABLE")))
                 .toList()));
     }
 
@@ -81,7 +81,7 @@ public class CarController {
                                 .replacePath("/api/cars/{id}")
                                 .buildAndExpand(savedCar.getId())
                                 .toUri())
-                .body(CarRequestMapper.toCarDTO(savedCar));
+                .body(CarResponseMapper.toCarResponseDTO(savedCar));
     }
 
     @DeleteMapping("/cars/{id}")
