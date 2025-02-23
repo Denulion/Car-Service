@@ -7,7 +7,7 @@ import lt.techin.model.Car;
 import java.time.LocalDate;
 
 public record RentalRequestDTO(@NotNull
-                               Car car,
+                               long carId,
                                @NotNull
                                @Future
                                LocalDate startDate) {

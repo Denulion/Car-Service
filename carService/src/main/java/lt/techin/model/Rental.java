@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 @Entity
 @Table(name = "rentals")
@@ -83,5 +84,9 @@ public class Rental {
 
     public void setTotalPrice(BigDecimal totalPrice) {
         this.totalPrice = totalPrice;
+    }
+
+    public long getTotalDays() {
+        return ChronoUnit.DAYS.between(rentalStart, rentalEnd);
     }
 }

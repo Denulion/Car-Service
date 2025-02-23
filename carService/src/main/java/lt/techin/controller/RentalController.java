@@ -1,10 +1,7 @@
 package lt.techin.controller;
 
 import jakarta.validation.Valid;
-import lt.techin.dto.CarRequestMapper;
-import lt.techin.dto.RentalRequestDTO;
-import lt.techin.dto.RentalRequestMapper;
-import lt.techin.dto.RentalResponseMapper;
+import lt.techin.dto.*;
 import lt.techin.model.CarStatus;
 import lt.techin.model.Rental;
 import lt.techin.model.User;
@@ -55,7 +52,7 @@ public class RentalController {
     }
 
     @PostMapping("/rentals/return/{id}")
-    public ResponseEntity<?> returnRentedCar(@Valid @RequestBody RentalRequestDTO rentalRequestDTO, @PathVariable long id) {
-        
+    public ResponseEntity<?> returnRentedCar(@PathVariable long id) {
+
     }
 }

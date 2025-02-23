@@ -27,8 +27,8 @@ public class CarController {
 
     @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
     @GetMapping("/cars")
-    public ResponseEntity<List<CarRequestDTO>> getCars() {
-        return ResponseEntity.ok(CarRequestMapper.toCarDTOList(carService.findAllCars()));
+    public ResponseEntity<List<CarResponseDTO>> getCars() {
+        return ResponseEntity.ok(CarResponseMapper.toCarResponseDTOList(carService.findAllCars()));
     }
 
     @GetMapping("/cars/available")
@@ -45,7 +45,7 @@ public class CarController {
         }
         Car foundCar = carService.findCarById(id).get();
 
-        return ResponseEntity.ok(CarRequestMapper.toCarDTO(foundCar));
+        return ResponseEntity.ok(CarResponseMapper.toCarResponseDTO(foundCar));
     }
 
     @PostMapping("/cars")
