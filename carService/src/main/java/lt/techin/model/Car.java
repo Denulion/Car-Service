@@ -2,6 +2,7 @@ package lt.techin.model;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,29 +19,27 @@ public class Car {
     private int year;
 
     private CarStatus status;
+    private BigDecimal dailyRentPrice;
 
     @OneToMany(mappedBy = "car")
     private List<Rental> rentals = new ArrayList<>();
 
-    public Car(String brand, String model, int year, CarStatus status, List<Rental> rentals) {
+    public Car(String brand, String model, int year, CarStatus status, List<Rental> rentals, BigDecimal dailyRentPrice) {
         this.brand = brand;
         this.model = model;
         this.year = year;
         this.status = status;
         this.rentals = rentals;
+        this.dailyRentPrice = dailyRentPrice;
     }
 
-    public Car() {
-
-    }
+    public Car() {}
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public void setId(Long id) {this.id = id;}
 
     public String getBrand() {
         return brand;
@@ -58,9 +57,7 @@ public class Car {
         this.model = model;
     }
 
-    public int getYear() {
-        return year;
-    }
+    public int getYear() {return year;}
 
     public void setYear(int year) {
         this.year = year;
@@ -81,4 +78,8 @@ public class Car {
     public void setRentals(List<Rental> rentals) {
         this.rentals = rentals;
     }
+
+    public BigDecimal getDailyRentPrice() {return dailyRentPrice;}
+
+    public void setDailyRentPrice(BigDecimal dailyRentPrice) {this.dailyRentPrice = dailyRentPrice;}
 }
