@@ -27,11 +27,14 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Rental> rentals = new ArrayList<>();
 
-    public User(String username, String password, List<Role> roles, List<Rental> rentals) {
+    private List<Rental> activeRentals = new ArrayList<>();
+
+    public User(String username, String password, List<Role> roles, List<Rental> rentals, List<Rental> activeRentals) {
         this.username = username;
         this.password = password;
         this.roles = roles;
         this.rentals = rentals;
+        this.activeRentals = activeRentals;
     }
 
     public User() {}
@@ -74,5 +77,13 @@ public class User {
 
     public void setRentals(List<Rental> rentals) {
         this.rentals = rentals;
+    }
+
+    public List<Rental> getActiveRentals() {
+        return activeRentals;
+    }
+
+    public void setActiveRentals(List<Rental> activeRentals) {
+        this.activeRentals = activeRentals;
     }
 }

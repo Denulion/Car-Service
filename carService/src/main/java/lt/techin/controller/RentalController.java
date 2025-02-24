@@ -5,6 +5,7 @@ import lt.techin.dto.*;
 import lt.techin.model.CarStatus;
 import lt.techin.model.Rental;
 import lt.techin.model.User;
+import lt.techin.service.CarService;
 import lt.techin.service.RentalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,10 +20,12 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 public class RentalController {
 
     private final RentalService rentalService;
+    public final CarService carService;
 
     @Autowired
-    public RentalController(RentalService rentalService) {
+    public RentalController(RentalService rentalService, CarService carService) {
         this.rentalService = rentalService;
+        this.carService = carService;
     }
 
     @PreAuthorize("hasAuthority('SCOPE_ROLE_USER')")
@@ -52,7 +55,14 @@ public class RentalController {
     }
 
     @PostMapping("/rentals/return/{id}")
-    public ResponseEntity<?> returnRentedCar(@PathVariable long id) {
+    public ResponseEntity<?> returnRentedCar(@PathVariable long id, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        Rental rental = rentalService.findRentalByCarId(id).get();
+        //carService.findCarById(id).get().getStatus().equals(CarStatus.valueOf("RENTED")) &&
+        if (rental.getUser().getId() == user.getId()) {
+            rentalService.calculateTotalPrice(rental);
 
+            carService.findCarById(id).get().setStatus(CarStatus.valueOf("AVAILABLE"));
+        }
     }
 }

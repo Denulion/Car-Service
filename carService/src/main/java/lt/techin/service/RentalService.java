@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Service
 public class RentalService {
@@ -19,8 +20,12 @@ public class RentalService {
         return rentalRepository.save(rental);
     }
 
-    public BigDecimal calculateTotalPrice(Rental rental) {
+    public void calculateTotalPrice(Rental rental) {
         rental.setRentalEnd(LocalDate.now());
         rental.setTotalPrice(BigDecimal.valueOf(rental.getTotalDays()).multiply(rental.getCar().getDailyRentPrice()));
+    }
+
+    public Optional<Rental> findRentalByCarId(Long id) {
+        return rentalRepository.findByCarId(id);
     }
 }
