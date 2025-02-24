@@ -5,7 +5,6 @@ import lt.techin.dto.*;
 import lt.techin.model.CarStatus;
 import lt.techin.model.Rental;
 import lt.techin.model.User;
-import lt.techin.service.CarService;
 import lt.techin.service.RentalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +13,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -24,6 +25,25 @@ public class RentalController {
     @Autowired
     public RentalController(RentalService rentalService) {
         this.rentalService = rentalService;
+    }
+
+    @GetMapping("/rentals/my")
+    public ResponseEntity<List<RentalResponseDTO>> getActiveRentals(Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        return ResponseEntity.ok().body(RentalResponseMapper.toRentalResponseDTOList(rentalService
+                .findRentalsByUserId(user.getId()).stream().filter(i -> i.getRentalEnd() == null).toList()));
+    }
+
+    @GetMapping("/rentals/my/history")
+    public ResponseEntity<List<RentalResponseDTO>> getInactiveRentals(Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        return ResponseEntity.ok().body(RentalResponseMapper.toRentalResponseDTOList(rentalService
+                .findRentalsByUserId(user.getId()).stream().filter(i -> i.getRentalEnd() != null).toList()));
+    }
+
+    @GetMapping("/rentals/history")
+    public ResponseEntity<List<RentalResponseDTO>> getAllRentals() {
+        return ResponseEntity.ok().body(RentalResponseMapper.toRentalResponseDTOList(rentalService.findAllRentals()));
     }
 
     @PreAuthorize("hasAuthority('SCOPE_ROLE_USER')")
@@ -61,7 +81,7 @@ public class RentalController {
         }
         if (rental.getUser().getId() == user.getId()) {
             rentalService.calculateTotalPriceAndReturnCar(rental);
-            return ResponseEntity.status(HttpStatus.OK).body("Car successfully returned! Thank you for using our Car Rent Service!");
+            return ResponseEntity.ok().body(RentalEndMapper.toRentalEndDTO(rental));
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("You are not renting this car!");
         }

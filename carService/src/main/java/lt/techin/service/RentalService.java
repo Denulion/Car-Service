@@ -31,4 +31,12 @@ public class RentalService {
     public List<Rental> findRentalsByCarId(Long id) {
         return rentalRepository.findAllByCarId(id);
     }
+
+    public List<Rental> findRentalsByUserId(Long id) {
+        return rentalRepository.findAllByUserId(id);
+    }
+
+    public List<Rental> findAllRentals() {
+        return rentalRepository.findAll();
+    }
 }
