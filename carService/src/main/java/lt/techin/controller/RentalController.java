@@ -20,12 +20,10 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 public class RentalController {
 
     private final RentalService rentalService;
-    public final CarService carService;
 
     @Autowired
-    public RentalController(RentalService rentalService, CarService carService) {
+    public RentalController(RentalService rentalService) {
         this.rentalService = rentalService;
-        this.carService = carService;
     }
 
     @PreAuthorize("hasAuthority('SCOPE_ROLE_USER')")
@@ -34,7 +32,7 @@ public class RentalController {
 
         User user = (User) authentication.getPrincipal();
 
-        if (user.getRentals().size() >= 2) {
+        if (user.getRentals().stream().filter(rental -> rental.getRentalEnd() == null).toList().size() == 2) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("You already have 2 cars rented!");
         }
 
@@ -57,12 +55,15 @@ public class RentalController {
     @PostMapping("/rentals/return/{id}")
     public ResponseEntity<?> returnRentedCar(@PathVariable long id, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        Rental rental = rentalService.findRentalByCarId(id).get();
-        //carService.findCarById(id).get().getStatus().equals(CarStatus.valueOf("RENTED")) &&
+        Rental rental = rentalService.findRentalsByCarId(id).stream().filter(i -> i.getRentalEnd() == null).findFirst().orElse(null);
+        if (rental == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("You are not renting this car!");
+        }
         if (rental.getUser().getId() == user.getId()) {
-            rentalService.calculateTotalPrice(rental);
-
-            carService.findCarById(id).get().setStatus(CarStatus.valueOf("AVAILABLE"));
+            rentalService.calculateTotalPriceAndReturnCar(rental);
+            return ResponseEntity.status(HttpStatus.OK).body("Car successfully returned! Thank you for using our Car Rent Service!");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("You are not renting this car!");
         }
     }
 }
