@@ -38,6 +38,7 @@ public class CarController {
                 .toList()));
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
     @GetMapping("/cars/{id}")
     public ResponseEntity<?> getCar(@PathVariable long id) {
         if (!carService.existsCarById(id)) {
@@ -48,6 +49,7 @@ public class CarController {
         return ResponseEntity.ok(CarResponseMapper.toCarResponseDTO(foundCar));
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
     @PostMapping("/cars")
     public ResponseEntity<?> addCar(@Valid @RequestBody CarRequestDTO carRequestDTO) {
         Car car = CarRequestMapper.toCar(carRequestDTO);
@@ -62,6 +64,7 @@ public class CarController {
                 .body(CarRequestMapper.toCarDTO(savedCar));
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
     @PutMapping("/cars/{id}")
     public ResponseEntity<?> updateCar(@PathVariable long id, @Valid @RequestBody CarRequestDTO carRequestDTO) {
         if (carService.existsCarById(id)) {
@@ -84,6 +87,7 @@ public class CarController {
                 .body(CarResponseMapper.toCarResponseDTO(savedCar));
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
     @DeleteMapping("/cars/{id}")
     public ResponseEntity<?> deleteCar(@PathVariable long id) {
         if (!carService.existsCarById(id)) {

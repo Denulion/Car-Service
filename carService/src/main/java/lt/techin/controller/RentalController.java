@@ -27,6 +27,7 @@ public class RentalController {
         this.rentalService = rentalService;
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_ROLE_USER')")
     @GetMapping("/rentals/my")
     public ResponseEntity<List<RentalResponseDTO>> getActiveRentals(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
@@ -34,6 +35,7 @@ public class RentalController {
                 .findRentalsByUserId(user.getId()).stream().filter(i -> i.getRentalEnd() == null).toList()));
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_ROLE_USER')")
     @GetMapping("/rentals/my/history")
     public ResponseEntity<List<RentalResponseDTO>> getInactiveRentals(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
@@ -41,6 +43,7 @@ public class RentalController {
                 .findRentalsByUserId(user.getId()).stream().filter(i -> i.getRentalEnd() != null).toList()));
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
     @GetMapping("/rentals/history")
     public ResponseEntity<List<RentalResponseDTO>> getAllRentals() {
         return ResponseEntity.ok().body(RentalResponseMapper.toRentalResponseDTOList(rentalService.findAllRentals()));
@@ -72,6 +75,7 @@ public class RentalController {
                 .body(RentalResponseMapper.toRentalResponseDTO(savedRental));
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_ROLE_USER')")
     @PostMapping("/rentals/return/{id}")
     public ResponseEntity<?> returnRentedCar(@PathVariable long id, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
