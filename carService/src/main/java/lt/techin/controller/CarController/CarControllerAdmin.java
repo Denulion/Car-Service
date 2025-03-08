@@ -1,4 +1,4 @@
-package lt.techin.controller;
+package lt.techin.controller.CarController;
 
 import jakarta.validation.Valid;
 import lt.techin.dto.*;
@@ -15,30 +15,22 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.util.List;
 
 @RestController
+@PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
 @RequestMapping("/api")
-public class CarController {
+public class CarControllerAdmin {
 
     private final CarService carService;
 
     @Autowired
-    public CarController(CarService carService) {
+    public CarControllerAdmin(CarService carService) {
         this.carService = carService;
     }
 
-    @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
     @GetMapping("/cars")
     public ResponseEntity<List<CarResponseDTO>> getCars() {
         return ResponseEntity.ok(CarResponseMapper.toCarResponseDTOList(carService.findAllCars()));
     }
 
-    @GetMapping("/cars/available")
-    public ResponseEntity<List<CarResponseDTO>> getAvailableCars() {
-        return ResponseEntity.ok(CarResponseMapper.toCarResponseDTOList(carService.findAllCars().stream()
-                .filter(car -> car.getStatus().equals(CarStatus.valueOf("AVAILABLE")))
-                .toList()));
-    }
-
-    @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
     @GetMapping("/cars/{id}")
     public ResponseEntity<?> getCar(@PathVariable long id) {
         if (!carService.existsCarById(id)) {
@@ -49,7 +41,6 @@ public class CarController {
         return ResponseEntity.ok(CarResponseMapper.toCarResponseDTO(foundCar));
     }
 
-    @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
     @PostMapping("/cars")
     public ResponseEntity<?> addCar(@Valid @RequestBody CarRequestDTO carRequestDTO) {
         Car car = CarRequestMapper.toCar(carRequestDTO);
@@ -64,7 +55,6 @@ public class CarController {
                 .body(CarRequestMapper.toCarDTO(savedCar));
     }
 
-    @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
     @PutMapping("/cars/{id}")
     public ResponseEntity<?> updateCar(@PathVariable long id, @Valid @RequestBody CarRequestDTO carRequestDTO) {
         if (carService.existsCarById(id)) {
@@ -87,7 +77,6 @@ public class CarController {
                 .body(CarResponseMapper.toCarResponseDTO(savedCar));
     }
 
-    @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
     @DeleteMapping("/cars/{id}")
     public ResponseEntity<?> deleteCar(@PathVariable long id) {
         if (!carService.existsCarById(id)) {

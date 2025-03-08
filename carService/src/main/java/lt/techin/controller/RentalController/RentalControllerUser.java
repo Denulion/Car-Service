@@ -1,4 +1,4 @@
-package lt.techin.controller;
+package lt.techin.controller.RentalController;
 
 import jakarta.validation.Valid;
 import lt.techin.dto.*;
@@ -17,17 +17,17 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.util.List;
 
 @RestController
+@PreAuthorize("hasAuthority('SCOPE_ROLE_USER')")
 @RequestMapping("/api")
-public class RentalController {
+public class RentalControllerUser {
 
     private final RentalService rentalService;
 
     @Autowired
-    public RentalController(RentalService rentalService) {
+    public RentalControllerUser(RentalService rentalService) {
         this.rentalService = rentalService;
     }
 
-    @PreAuthorize("hasAuthority('SCOPE_ROLE_USER')")
     @GetMapping("/rentals/my")
     public ResponseEntity<List<RentalResponseDTO>> getActiveRentals(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
@@ -35,7 +35,6 @@ public class RentalController {
                 .findRentalsByUserId(user.getId()).stream().filter(i -> i.getRentalEnd() == null).toList()));
     }
 
-    @PreAuthorize("hasAuthority('SCOPE_ROLE_USER')")
     @GetMapping("/rentals/my/history")
     public ResponseEntity<List<RentalResponseDTO>> getInactiveRentals(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
@@ -43,13 +42,6 @@ public class RentalController {
                 .findRentalsByUserId(user.getId()).stream().filter(i -> i.getRentalEnd() != null).toList()));
     }
 
-    @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
-    @GetMapping("/rentals/history")
-    public ResponseEntity<List<RentalResponseDTO>> getAllRentals() {
-        return ResponseEntity.ok().body(RentalResponseMapper.toRentalResponseDTOList(rentalService.findAllRentals()));
-    }
-
-    @PreAuthorize("hasAuthority('SCOPE_ROLE_USER')")
     @PostMapping("/rentals")
     public ResponseEntity<?> addRental(@Valid @RequestBody RentalRequestDTO rentalRequestDTO, Authentication authentication) {
 
@@ -75,7 +67,6 @@ public class RentalController {
                 .body(RentalResponseMapper.toRentalResponseDTO(savedRental));
     }
 
-    @PreAuthorize("hasAuthority('SCOPE_ROLE_USER')")
     @PostMapping("/rentals/return/{id}")
     public ResponseEntity<?> returnRentedCar(@PathVariable long id, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
