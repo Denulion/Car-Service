@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class RentalService {
@@ -24,7 +23,10 @@ public class RentalService {
 
     public void calculateTotalPriceAndReturnCar(Rental rental) {
         rental.setRentalEnd(LocalDate.now());
-        rental.setTotalPrice(BigDecimal.valueOf(rental.getTotalDays()).multiply(rental.getCar().getDailyRentPrice()));
+
+        long totalDays = Math.max(1, rental.getTotalDays());
+        rental.setTotalPrice(BigDecimal.valueOf(totalDays).multiply(rental.getCar().getDailyRentPrice()));
+
         rental.getCar().setStatus(CarStatus.valueOf("AVAILABLE"));
     }
 
