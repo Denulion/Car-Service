@@ -3,6 +3,7 @@ package lt.techin.controller.UserController;
 import jakarta.validation.Valid;
 import lt.techin.dto.UserRequestDTO;
 import lt.techin.dto.UserRequestMapper;
+import lt.techin.dto.UserResponseDTO;
 import lt.techin.dto.UserResponseMapper;
 import lt.techin.model.User;
 import lt.techin.service.UserService;
@@ -34,17 +35,17 @@ public class UserControllerAdmin {
 
 
     @GetMapping("/users")
-    public ResponseEntity<List<UserRequestDTO>> getUsers() {
-        return ResponseEntity.ok(UserRequestMapper.toUserDTOList(userService.findAllUsers()));
+    public ResponseEntity<List<UserResponseDTO>> getUsers() {
+        return ResponseEntity.ok(UserResponseMapper.toUserResponseDTOList(userService.findAllUsers()));
     }
 
     @GetMapping("/users/{id}")
-    public ResponseEntity<UserRequestDTO> getUser(@PathVariable long id) {
+    public ResponseEntity<UserResponseDTO> getUser(@PathVariable long id) {
         Optional<User> foundUser = userService.findUserById(id);
         if (foundUser.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(UserRequestMapper.toUserDTO(foundUser.get()));
+        return ResponseEntity.ok(UserResponseMapper.toUserResponseDTO(foundUser.get()));
     }
 
     @PutMapping("/users/{id}")
