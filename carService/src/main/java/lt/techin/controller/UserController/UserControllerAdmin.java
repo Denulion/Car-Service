@@ -51,27 +51,19 @@ public class UserControllerAdmin {
     @PutMapping("/users/{id}")
     public ResponseEntity<?> updateUser(@PathVariable long id, @Valid @RequestBody UserRequestDTO userRequestDTO) {
         if (userService.existsUserById(id)) {
+
             User userFromDB = userService.findUserById(id).get();
 
             UserRequestMapper.updateUserFromDTO(userFromDB, userRequestDTO);
+
+            userFromDB.setPassword(passwordEncoder.encode(userFromDB.getPassword()));
 
             userService.saveUser(userFromDB);
 
             return ResponseEntity.ok(UserResponseMapper.toUserResponseDTO(userFromDB));
         }
 
-        if (userService.existsUserByUsername(userRequestDTO.username())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("A user with this username already exists!");
-        }
-
-        User savedUser = userService.saveUser(UserRequestMapper.toUser(userRequestDTO));
-
-        return ResponseEntity.created(
-                        ServletUriComponentsBuilder.fromCurrentRequest()
-                                .replacePath("/api/movies/{id}")
-                                .buildAndExpand(savedUser.getId())
-                                .toUri())
-                .body(UserResponseMapper.toUserResponseDTO(savedUser));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("This user does not exist!");
     }
 
     @DeleteMapping("/users/{id}")
