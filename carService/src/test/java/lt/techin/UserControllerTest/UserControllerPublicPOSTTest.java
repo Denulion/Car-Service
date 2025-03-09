@@ -27,6 +27,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -72,5 +73,50 @@ public class UserControllerPublicPOSTTest {
                 .andExpect(jsonPath("roles[0]").exists());
 
         Mockito.verify(userService, times(1)).saveUser(ArgumentMatchers.any(User.class));
+    }
+
+    //unhappy path
+    @Test
+    void addUser_whenUserAuthenticated_thenReturnAnd403() throws Exception {
+        //given
+        UserRequestDTO userRequestDTO = new UserRequestDTO("username", "password", List.of(new RoleDTO("ROLE_USER")));
+
+        //when
+        mockMvc.perform(post("/api/users")
+                        .with(user("existingUser").password("password").roles("USER"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userRequestDTO)))
+                //then
+                .andExpect(status().isForbidden());
+    }
+
+    //unhappy path
+    @Test
+    void addUser_whenUsernameAlreadyExists_thenReturnAnd400() throws Exception {
+        //given
+        UserRequestDTO userRequestDTO = new UserRequestDTO("username", "password", List.of(new RoleDTO("ROLE_USER")));
+
+        when(userService.existsUserByUsername(userRequestDTO.username())).thenReturn(true);
+
+        //when
+        mockMvc.perform(post("/api/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userRequestDTO)))
+                //then
+                .andExpect(status().isBadRequest());
+    }
+
+    //unhappy path
+    @Test
+    void addUser_whenInvalidRequest_thenReturnAnd400() throws Exception {
+        //given
+        UserRequestDTO userRequestDTO = new UserRequestDTO("", "", List.of(new RoleDTO("ROLE_USER")));
+
+        //when
+        mockMvc.perform(post("/api/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userRequestDTO)))
+                //then
+                .andExpect(status().isBadRequest());
     }
 }
