@@ -2,9 +2,11 @@ package lt.techin.controller.RentalController;
 
 import jakarta.validation.Valid;
 import lt.techin.dto.*;
+import lt.techin.model.Car;
 import lt.techin.model.CarStatus;
 import lt.techin.model.Rental;
 import lt.techin.model.User;
+import lt.techin.service.CarService;
 import lt.techin.service.RentalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
@@ -22,10 +25,12 @@ import java.util.List;
 public class RentalControllerUser {
 
     private final RentalService rentalService;
+    private final CarService carService;
 
     @Autowired
-    public RentalControllerUser(RentalService rentalService) {
+    public RentalControllerUser(RentalService rentalService, CarService carService) {
         this.rentalService = rentalService;
+        this.carService = carService;
     }
 
     @GetMapping("/rentals/my")
@@ -51,7 +56,9 @@ public class RentalControllerUser {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("You already have 2 cars rented!");
         }
 
-        Rental rental = RentalRequestMapper.toRental(rentalRequestDTO, user);
+        Car car = carService.findCarById(rentalRequestDTO.carId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Car not found"));
+        Rental rental = RentalRequestMapper.toRental(rentalRequestDTO, user, car);
 
         if (rental.getCar().getStatus().equals(CarStatus.valueOf("RENTED"))) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("This car is already rented!");

@@ -9,6 +9,6 @@ import java.time.LocalDate;
 public record RentalRequestDTO(@NotNull
                                long carId,
                                @NotNull
-                               @Future
+                               @Future(message = "You can rent a car only from the next day")
                                LocalDate startDate) {
 }
