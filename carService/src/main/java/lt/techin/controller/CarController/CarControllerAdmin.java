@@ -67,14 +67,7 @@ public class CarControllerAdmin {
             return ResponseEntity.ok(CarResponseMapper.toCarResponseDTO(carFromDB));
         }
 
-        Car savedCar = carService.saveCar(CarRequestMapper.toCar(carRequestDTO));
-
-        return ResponseEntity.created(
-                        ServletUriComponentsBuilder.fromCurrentRequest()
-                                .replacePath("/api/cars/{id}")
-                                .buildAndExpand(savedCar.getId())
-                                .toUri())
-                .body(CarResponseMapper.toCarResponseDTO(savedCar));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("This car doesn't exist!");
     }
 
     @DeleteMapping("/cars/{id}")
