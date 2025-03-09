@@ -68,4 +68,41 @@ public class UserControllerAdminGETTest {
 
         Mockito.verify(userService, times(1)).findAllUsers();
     }
+
+    //unhappy path
+    @Test
+    void getUsers_whenUnauthenticated_thenReturnAnd401() throws Exception {
+        //given
+        Role role = new Role("USER");
+
+        User user1 = new User("username1", "password1", List.of(role), List.of());
+        User user2 = new User("username2", "password2", List.of(role), List.of());
+
+        List<User> users = List.of(user1, user2);
+
+        given(userService.findAllUsers()).willReturn(users);
+
+        //when
+        mockMvc.perform(get("/api/users"))
+                //then
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$").doesNotExist());
+
+        Mockito.verify(userService, times(0)).findAllUsers();
+    }
+
+    //unhappy path
+    @Test
+    @WithMockUser(authorities = "SCOPE_ROLE_ADMIN")
+    void getUsers_whenFindAllEmpty_thenReturnEmptyListAnd200() throws Exception{
+        //given
+        given(userService.findAllUsers()).willReturn(List.of());
+
+        //when
+        mockMvc.perform(get("/api/users"))
+                //then
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$", Matchers.hasSize(0)));
+    }
 }
