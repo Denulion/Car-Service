@@ -37,8 +37,6 @@ public class UserControllerAdminGETByIdTest {
     @MockitoBean
     private UserService userService;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
     //happy path
     @Test
     @WithMockUser(authorities = "SCOPE_ROLE_ADMIN")
