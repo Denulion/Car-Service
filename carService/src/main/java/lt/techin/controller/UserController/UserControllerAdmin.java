@@ -56,7 +56,7 @@ public class UserControllerAdmin {
 
             UserRequestMapper.updateUserFromDTO(userFromDB, userRequestDTO);
 
-            userFromDB.setPassword(passwordEncoder.encode(userFromDB.getPassword()));
+            userFromDB.setPassword(passwordEncoder.encode(userRequestDTO.password()));
 
             userService.saveUser(userFromDB);
 
