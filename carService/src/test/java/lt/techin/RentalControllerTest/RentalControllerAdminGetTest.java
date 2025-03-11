@@ -71,7 +71,7 @@ public class RentalControllerAdminGetTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("[0].id").value(1))
                 .andExpect(jsonPath("[0].user.username").value("username1"))
-                .andExpect(jsonPath("[0].user.roles[0].name").value("ROLE_USER"))
+                .andExpect(jsonPath("[0].user.roles[0].id").value(1L))
                 .andExpect(jsonPath("[0].car.brand").value("Toyota"))
                 .andExpect(jsonPath("[0].car.model").value("Camry"))
                 .andExpect(jsonPath("[0].car.year").value(2020))
@@ -81,7 +81,7 @@ public class RentalControllerAdminGetTest {
 
                 .andExpect(jsonPath("[1].id").value(2))
                 .andExpect(jsonPath("[1].user.username").value("username2"))
-                .andExpect(jsonPath("[1].user.roles[0].name").value("ROLE_USER"))
+                .andExpect(jsonPath("[1].user.roles[0].id").value(1L))
                 .andExpect(jsonPath("[1].car.brand").value("Honda"))
                 .andExpect(jsonPath("[1].car.model").value("Civic"))
                 .andExpect(jsonPath("[1].car.year").value(2019))
