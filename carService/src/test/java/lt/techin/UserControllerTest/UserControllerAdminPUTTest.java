@@ -53,7 +53,7 @@ public class UserControllerAdminPUTTest {
     void updateUser_whenValid_thenReturnAnd200() throws Exception {
         //given
         long userId = 1L;
-        UserRequestDTO userRequestDTO = new UserRequestDTO("username", "password", List.of(new RoleDTO("ROLE_USER")));
+        UserRequestDTO userRequestDTO = new UserRequestDTO("username", "password", List.of(new RoleDTO(1)));
 
         Role role = new Role("ROLE_CLIENT");
         role.setId(1L);
@@ -85,7 +85,7 @@ public class UserControllerAdminPUTTest {
     void updateUser_whenUserWithIdDoesntExist_thenReturnAnd404() throws Exception {
         //given
         long userId = 1L;
-        UserRequestDTO userRequestDTO = new UserRequestDTO("username", "password", List.of(new RoleDTO("ROLE_USER")));
+        UserRequestDTO userRequestDTO = new UserRequestDTO("username", "password", List.of(new RoleDTO(1)));
 
         given(userService.existsUserById(userId)).willReturn(false);
 
@@ -105,7 +105,7 @@ public class UserControllerAdminPUTTest {
     void updateUser_whenUnauthenticated_thenReturnAnd401() throws Exception {
         //given
         long userId = 1L;
-        UserRequestDTO userRequestDTO = new UserRequestDTO("username", "password", List.of(new RoleDTO("ROLE_USER")));
+        UserRequestDTO userRequestDTO = new UserRequestDTO("username", "password", List.of(new RoleDTO(1)));
 
         //when
         mockMvc.perform(put("/api/users/{id}", userId)

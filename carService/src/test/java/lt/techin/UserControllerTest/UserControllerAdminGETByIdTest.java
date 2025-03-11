@@ -43,8 +43,10 @@ public class UserControllerAdminGETByIdTest {
     void getUser_whenValid_thenReturnAnd200() throws Exception {
         //given
         long userId = 1L;
+        Role role = new Role("ROLE_USER");
+        role.setId(1L);
 
-        User user1 = new User("username1", "password1", List.of(new Role("USER")), List.of());
+        User user1 = new User("username1", "password1", List.of(role), List.of());
 
         given(userService.findUserById(userId)).willReturn(Optional.of(user1));
 
@@ -55,7 +57,7 @@ public class UserControllerAdminGETByIdTest {
                 .andExpect(jsonPath("username").value("username1"))
                 .andExpect(jsonPath("roles").isArray())
                 .andExpect(jsonPath("roles", Matchers.hasSize(1)))
-                .andExpect(jsonPath("roles.[0].name").value("USER"));
+                .andExpect(jsonPath("roles.[0].id").value(1L));
 
         Mockito.verify(userService, times(1)).findUserById(userId);
     }

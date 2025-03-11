@@ -42,6 +42,7 @@ public class UserControllerAdminGETTest {
     void getUsers_whenAuthenticatedAsAdmin_thenReturnAnd200() throws Exception {
         //given
         Role role = new Role("USER");
+        role.setId(1L);
 
         User user1 = new User("username1", "password1", List.of(role), List.of());
         User user2 = new User("username2", "password2", List.of(role), List.of());
@@ -57,12 +58,12 @@ public class UserControllerAdminGETTest {
                 .andExpect(jsonPath("[0].username").value("username1"))
                 .andExpect(jsonPath("[0].roles").isArray())
                 .andExpect(jsonPath("[0].roles", Matchers.hasSize(1)))
-                .andExpect(jsonPath("[0].roles.[0].name").value("USER"))
+                .andExpect(jsonPath("[0].roles.[0].id").value(1L))
 
                 .andExpect(jsonPath("[1].username").value("username2"))
                 .andExpect(jsonPath("[1].roles").isArray())
                 .andExpect(jsonPath("[1].roles", Matchers.hasSize(1)))
-                .andExpect(jsonPath("[1].roles.[0].name").value("USER"));
+                .andExpect(jsonPath("[1].roles.[0].id").value(1L));
 
         Mockito.verify(userService, times(1)).findAllUsers();
     }

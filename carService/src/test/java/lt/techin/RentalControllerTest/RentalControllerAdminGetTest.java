@@ -44,6 +44,7 @@ public class RentalControllerAdminGetTest {
     void getAllRentals_whenAdmin_thenReturnAnd200() throws Exception {
         // given
         Role role = new Role("ROLE_USER");
+        role.setId(1L);
 
         User user1 = new User("username1", "password1", List.of(role), List.of());
         User user2 = new User("username2", "password2", List.of(role), List.of());

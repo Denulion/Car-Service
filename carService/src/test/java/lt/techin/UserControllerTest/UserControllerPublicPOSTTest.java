@@ -50,7 +50,7 @@ public class UserControllerPublicPOSTTest {
     @Test
     void addUser_whenValidRequest_thenReturnAnd201() throws Exception {
         //given
-        UserRequestDTO userRequestDTO = new UserRequestDTO("username", "password", List.of(new RoleDTO("ROLE_USER")));
+        UserRequestDTO userRequestDTO = new UserRequestDTO("username", "password", List.of(new RoleDTO(1)));
 
         Role role = new Role("ROLE_CLIENT");
         role.setId(1L);
@@ -79,7 +79,7 @@ public class UserControllerPublicPOSTTest {
     @Test
     void addUser_whenUserAuthenticated_thenReturnAnd403() throws Exception {
         //given
-        UserRequestDTO userRequestDTO = new UserRequestDTO("username", "password", List.of(new RoleDTO("ROLE_USER")));
+        UserRequestDTO userRequestDTO = new UserRequestDTO("username", "password", List.of(new RoleDTO(1)));
 
         //when
         mockMvc.perform(post("/api/users")
@@ -94,7 +94,7 @@ public class UserControllerPublicPOSTTest {
     @Test
     void addUser_whenUsernameAlreadyExists_thenReturnAnd400() throws Exception {
         //given
-        UserRequestDTO userRequestDTO = new UserRequestDTO("username", "password", List.of(new RoleDTO("ROLE_USER")));
+        UserRequestDTO userRequestDTO = new UserRequestDTO("username", "password", List.of(new RoleDTO(1)));
 
         when(userService.existsUserByUsername(userRequestDTO.username())).thenReturn(true);
 
@@ -110,7 +110,7 @@ public class UserControllerPublicPOSTTest {
     @Test
     void addUser_whenInvalidRequest_thenReturnAnd400() throws Exception {
         //given
-        UserRequestDTO userRequestDTO = new UserRequestDTO("", "", List.of(new RoleDTO("ROLE_USER")));
+        UserRequestDTO userRequestDTO = new UserRequestDTO("", "", List.of(new RoleDTO(1)));
 
         //when
         mockMvc.perform(post("/api/users")
