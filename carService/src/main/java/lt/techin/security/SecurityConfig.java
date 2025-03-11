@@ -43,6 +43,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(c -> c.disable())
+                .httpBasic(Customizer.withDefaults()) //!!!!!
                 .oauth2ResourceServer(o -> o.jwt(Customizer.withDefaults()))
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling((exceptions) -> exceptions
@@ -50,6 +51,15 @@ public class SecurityConfig {
                         .accessDeniedHandler(new BearerTokenAccessDeniedHandler()))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
+                        .requestMatchers(
+                                "/api-docs",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/swagger-ui-custom.html",
+                                "/api-docs/swagger-config",
+                                "/api-docs.yaml"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 );
 

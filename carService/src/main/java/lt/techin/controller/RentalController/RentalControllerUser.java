@@ -1,5 +1,6 @@
 package lt.techin.controller.RentalController;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lt.techin.dto.*;
 import lt.techin.model.Car;
@@ -33,6 +34,7 @@ public class RentalControllerUser {
         this.carService = carService;
     }
 
+    @Operation(summary = "Get all active rentals for current user", description = "Retrieves all active rentals for currently authenticated user")
     @GetMapping("/rentals/my")
     public ResponseEntity<List<RentalResponseDTO>> getActiveRentals(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
@@ -40,6 +42,7 @@ public class RentalControllerUser {
                 .findRentalsByUserId(user.getId()).stream().filter(i -> i.getRentalEnd() == null).toList()));
     }
 
+    @Operation(summary = "Get all ended rentals for current user", description = "Retrieves all ended rentals for currently authenticated user")
     @GetMapping("/rentals/my/history")
     public ResponseEntity<List<RentalResponseDTO>> getInactiveRentals(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
@@ -47,6 +50,7 @@ public class RentalControllerUser {
                 .findRentalsByUserId(user.getId()).stream().filter(i -> i.getRentalEnd() != null).toList()));
     }
 
+    @Operation(summary = "Post new rental", description = "Posts new rental by Car unique ID and with start date (should be in future)")
     @PostMapping("/rentals")
     public ResponseEntity<?> addRental(@Valid @RequestBody RentalRequestDTO rentalRequestDTO, Authentication authentication) {
 
@@ -74,6 +78,7 @@ public class RentalControllerUser {
                 .body(RentalResponseMapper.toRentalResponseDTO(savedRental));
     }
 
+    @Operation(summary = "Return car by ID", description = "Returns a car by it's unique ID and a total price for the rent")
     @PostMapping("/rentals/return/{id}")
     public ResponseEntity<?> returnRentedCar(@PathVariable long id, Authentication authentication) {
         User user = (User) authentication.getPrincipal();

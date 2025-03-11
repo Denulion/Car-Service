@@ -1,5 +1,6 @@
 package lt.techin.controller.RentalController;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lt.techin.dto.RentalResponseDTO;
 import lt.techin.dto.RentalResponseMapper;
 import lt.techin.service.RentalService;
@@ -24,6 +25,7 @@ public class RentalControllerAdmin {
         this.rentalService = rentalService;
     }
 
+    @Operation(summary = "Get all rentals", description = "Retrieves all rentals, active and ended")
     @GetMapping("/rentals/history")
     public ResponseEntity<List<RentalResponseDTO>> getAllRentals() {
         return ResponseEntity.ok().body(RentalResponseMapper.toRentalResponseDTOList(rentalService.findAllRentals()));

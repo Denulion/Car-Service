@@ -14,7 +14,7 @@ public class RoleMapper {
     }
 
     private static RoleDTO toRoleDTO(Role role) {
-        return new RoleDTO(role.getName());
+        return new RoleDTO(role.getId());
     }
 
     public static List<Role> toRoleListFromDTO(List<RoleDTO> roleDTOList) {
@@ -24,8 +24,8 @@ public class RoleMapper {
     private static Role toRole(RoleDTO roleDTO) {
         Role role = new Role();
 
-        //role.setId(roleDTO.id());
-        role.setName(roleDTO.name());
+        role.setId(roleDTO.id());
+        //role.setName(roleDTO.name());
 
         return role;
     }

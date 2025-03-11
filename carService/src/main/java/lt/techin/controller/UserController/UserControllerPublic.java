@@ -1,5 +1,6 @@
 package lt.techin.controller.UserController;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lt.techin.dto.UserRequestDTO;
 import lt.techin.dto.UserRequestMapper;
@@ -31,6 +32,7 @@ public class UserControllerPublic {
         this.passwordEncoder = passwordEncoder;
     }
 
+    @Operation(summary = "Create new user", description = "Creates new user (if creating Admin use all roles (id 1 for User and id 2 for Admin))")
     @PostMapping("/users")
     public ResponseEntity<?> addUser(@Valid @RequestBody UserRequestDTO userRequestDTO, Authentication authentication) {
 

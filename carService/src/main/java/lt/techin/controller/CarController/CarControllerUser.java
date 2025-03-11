@@ -1,5 +1,6 @@
 package lt.techin.controller.CarController;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lt.techin.dto.CarResponseDTO;
 import lt.techin.dto.CarResponseMapper;
 import lt.techin.model.CarStatus;
@@ -25,6 +26,7 @@ public class CarControllerUser {
         this.carService = carService;
     }
 
+    @Operation(summary = "Get all available cars", description = "Retrieves the list of all cars currently available for rent")
     @GetMapping("/cars/available")
     public ResponseEntity<List<CarResponseDTO>> getAvailableCars() {
         return ResponseEntity.ok(CarResponseMapper.toCarResponseDTOList(carService.findAllCars().stream()

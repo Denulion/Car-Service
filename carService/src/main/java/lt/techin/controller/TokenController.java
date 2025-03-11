@@ -1,5 +1,6 @@
 package lt.techin.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lt.techin.model.User;
 import lt.techin.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ public class TokenController {
         this.userRepository = userRepository;
     }
 
+    @Operation(summary = "Get JWT Token (needs Basic Auth)", description = "Creates Bearer Token using Basic Auth")
     @PostMapping("/token")
     public String token(Authentication authentication) {
         Instant now = Instant.now();

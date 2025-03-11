@@ -1,5 +1,6 @@
 package lt.techin.controller.CarController;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lt.techin.dto.*;
 import lt.techin.model.Car;
@@ -26,11 +27,13 @@ public class CarControllerAdmin {
         this.carService = carService;
     }
 
+    @Operation(summary = "Get all cars", description = "Retrieves a list of all cars, both rented and available for rent")
     @GetMapping("/cars")
     public ResponseEntity<List<CarResponseDTO>> getCars() {
         return ResponseEntity.ok(CarResponseMapper.toCarResponseDTOList(carService.findAllCars()));
     }
 
+    @Operation(summary = "Get car by ID", description = "Retrieves a car by it's unique ID")
     @GetMapping("/cars/{id}")
     public ResponseEntity<?> getCar(@PathVariable long id) {
         if (!carService.existsCarById(id)) {
@@ -41,6 +44,7 @@ public class CarControllerAdmin {
         return ResponseEntity.ok(CarResponseMapper.toCarResponseDTO(foundCar));
     }
 
+    @Operation(summary = "Post new car", description = "Adds a new car to the database")
     @PostMapping("/cars")
     public ResponseEntity<?> addCar(@Valid @RequestBody CarRequestDTO carRequestDTO) {
         Car car = CarRequestMapper.toCar(carRequestDTO);
@@ -55,6 +59,7 @@ public class CarControllerAdmin {
                 .body(CarRequestMapper.toCarDTO(savedCar));
     }
 
+    @Operation(summary = "Update car by ID", description = "Updates a car by it's unique ID")
     @PutMapping("/cars/{id}")
     public ResponseEntity<?> updateCar(@PathVariable long id, @Valid @RequestBody CarRequestDTO carRequestDTO) {
         if (carService.existsCarById(id)) {
@@ -70,6 +75,7 @@ public class CarControllerAdmin {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("This car doesn't exist!");
     }
 
+    @Operation(summary = "Delete car by ID", description = "Deletes a car by it's unique ID")
     @DeleteMapping("/cars/{id}")
     public ResponseEntity<?> deleteCar(@PathVariable long id) {
         if (!carService.existsCarById(id)) {

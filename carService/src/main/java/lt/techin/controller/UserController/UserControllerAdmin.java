@@ -1,5 +1,6 @@
 package lt.techin.controller.UserController;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lt.techin.dto.UserRequestDTO;
 import lt.techin.dto.UserRequestMapper;
@@ -33,12 +34,13 @@ public class UserControllerAdmin {
         this.passwordEncoder = passwordEncoder;
     }
 
-
+    @Operation(summary = "Get all existing users", description = "Retrieves all users from database")
     @GetMapping("/users")
     public ResponseEntity<List<UserResponseDTO>> getUsers() {
         return ResponseEntity.ok(UserResponseMapper.toUserResponseDTOList(userService.findAllUsers()));
     }
 
+    @Operation(summary = "Get user by ID", description = "Retrieves a user by their unique ID")
     @GetMapping("/users/{id}")
     public ResponseEntity<UserResponseDTO> getUser(@PathVariable long id) {
         Optional<User> foundUser = userService.findUserById(id);
@@ -48,6 +50,7 @@ public class UserControllerAdmin {
         return ResponseEntity.ok(UserResponseMapper.toUserResponseDTO(foundUser.get()));
     }
 
+    @Operation(summary = "Update user by ID", description = "Updates a user by their unique ID")
     @PutMapping("/users/{id}")
     public ResponseEntity<?> updateUser(@PathVariable long id, @Valid @RequestBody UserRequestDTO userRequestDTO) {
         if (userService.existsUserById(id)) {
@@ -66,6 +69,7 @@ public class UserControllerAdmin {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("This user does not exist!");
     }
 
+    @Operation(summary = "Delete user by ID", description = "Deletes a user by their unique ID")
     @DeleteMapping("/users/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable long id) {
         if (!userService.existsUserById(id)) {
