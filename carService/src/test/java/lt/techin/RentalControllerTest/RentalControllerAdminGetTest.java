@@ -5,6 +5,7 @@ import lt.techin.dto.*;
 import lt.techin.model.*;
 import lt.techin.security.SecurityConfig;
 import lt.techin.service.RentalService;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,4 +93,49 @@ public class RentalControllerAdminGetTest {
         Mockito.verify(rentalService, times(1)).findAllRentals();
     }
 
+    //unhappy path
+    @Test
+    void getAllRentals_whenUnauthenticated_thenReturnAnd401() throws Exception {
+        //given
+        given(rentalService.findAllRentals()).willReturn(List.of());
+
+        //when
+        mockMvc.perform(get("/api/rentals/history"))
+                //then
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$").doesNotExist());
+
+        Mockito.verify(rentalService, times(0)).findAllRentals();
+    }
+
+    //unhappy path
+    @Test
+    @WithMockUser(authorities = "SCOPE_ROLE_USER")
+    void getAllRentals_whenUserNotAdmin_thenReturnAnd403() throws Exception {
+        //given
+        given(rentalService.findAllRentals()).willReturn(List.of());
+
+        //when
+        mockMvc.perform(get("/api/rentals/history"))
+                //then
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$").doesNotExist());
+
+        Mockito.verify(rentalService, times(0)).findAllRentals();
+    }
+
+    //unhappy path
+    @Test
+    @WithMockUser(authorities = "SCOPE_ROLE_ADMIN")
+    void getAllRentals_whenFindAllEmpty_thenReturnEmptyListAnd200() throws Exception {
+        //given
+        given(rentalService.findAllRentals()).willReturn(List.of());
+
+        //when
+        mockMvc.perform(get("/api/rentals/history"))
+                //then
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$", Matchers.hasSize(0)));
+    }
 }
