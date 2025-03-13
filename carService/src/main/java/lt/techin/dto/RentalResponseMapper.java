@@ -14,7 +14,8 @@ public class RentalResponseMapper {
 
     public static List<RentalResponseDTO> toRentalResponseDTOList(List<Rental> rentals) {
         return rentals.stream()
-                .map(rental -> new RentalResponseDTO(rental.getId(), UserResponseMapper.toUserResponseDTO(rental.getUser()), CarResponseMapper.toCarResponseDTO(rental.getCar()), rental.getRentalStart()))
+                .map(rental -> new RentalResponseDTO(rental.getId(), UserResponseMapper.toUserResponseDTO(rental.getUser()),
+                        CarResponseMapper.toCarResponseDTO(rental.getCar()), rental.getRentalStart()))
                 .toList();
     }
 }

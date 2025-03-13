@@ -43,10 +43,9 @@ public class RentalControllerUser {
 
     @Operation(summary = "Get all ended rentals for current user", description = "Retrieves all ended rentals for currently authenticated user")
     @GetMapping("/rentals/my/history")
-    public ResponseEntity<List<RentalResponseDTO>> getInactiveRentals(Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
-        return ResponseEntity.ok().body(RentalResponseMapper.toRentalResponseDTOList(rentalService
-                .findRentalsByUserId(user.getId()).stream().filter(i -> i.getRentalEnd() != null).toList()));
+    public ResponseEntity<List<RentalEndDTO>> getInactiveRentals(Authentication authentication) {
+        return ResponseEntity.ok().body(RentalEndMapper.toRentalEndDTOList(rentalService
+                .findRentalsByUserId(((User) authentication.getPrincipal()).getId()).stream().filter(i -> i.getRentalEnd() != null).toList()));
     }
 
     @Operation(summary = "Post new rental", description = "Posts new rental by Car unique ID and with start date (should be in future)")

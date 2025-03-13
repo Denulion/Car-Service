@@ -17,7 +17,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -36,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = RentalControllerUser.class)
 @Import(SecurityConfig.class)
 @AutoConfigureMockMvc
-public class RentalControllerUserGetActiveTest {
+public class RentalControllerUserGetActiveRentalsTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -47,7 +46,7 @@ public class RentalControllerUserGetActiveTest {
 
     //happy path
     @Test
-    void getAllActiveRentals_whenUser_thenReturnAnd200() throws Exception {
+    void getActiveRentals_whenUser_thenReturnAnd200() throws Exception {
         //given
         Role role = new Role("ROLE_USER");
         role.setId(1L);
@@ -101,7 +100,7 @@ public class RentalControllerUserGetActiveTest {
 
     //unhappy path
     @Test
-    void getAllActiveRentals_whenUnauthenticated_thenReturnAnd401() throws Exception {
+    void getActiveRentals_whenUnauthenticated_thenReturnAnd401() throws Exception {
         //given
         given(rentalService.findRentalsByUserId(any())).willReturn(List.of());
 
@@ -116,7 +115,7 @@ public class RentalControllerUserGetActiveTest {
 
     //unhappy path
     @Test
-    void getAllActiveRentals_whenActiveRentalsIsEmpty_thenReturnEmptyListAnd200() throws Exception {
+    void getActiveRentals_whenActiveRentalsIsEmpty_thenReturnEmptyListAnd200() throws Exception {
         //given
         Role role = new Role("ROLE_USER");
         role.setId(1L);
