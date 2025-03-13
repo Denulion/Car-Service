@@ -54,7 +54,7 @@ public class RentalControllerUser {
 
         User user = (User) authentication.getPrincipal();
 
-        if (user.getRentals().stream().filter(rental -> rental.getRentalEnd() == null).toList().size() == 2) {
+        if (rentalService.findAllRentalsByUserId(user.getId()).size() >= 2) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("You already have 2 cars rented!");
         }
 
