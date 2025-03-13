@@ -37,9 +37,8 @@ public class RentalControllerUser {
     @Operation(summary = "Get all active rentals for current user", description = "Retrieves all active rentals for currently authenticated user")
     @GetMapping("/rentals/my")
     public ResponseEntity<List<RentalResponseDTO>> getActiveRentals(Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
         return ResponseEntity.ok().body(RentalResponseMapper.toRentalResponseDTOList(rentalService
-                .findRentalsByUserId(user.getId()).stream().filter(i -> i.getRentalEnd() == null).toList()));
+                .findRentalsByUserId(((User) authentication.getPrincipal()).getId()).stream().filter(i -> i.getRentalEnd() == null).toList()));
     }
 
     @Operation(summary = "Get all ended rentals for current user", description = "Retrieves all ended rentals for currently authenticated user")
