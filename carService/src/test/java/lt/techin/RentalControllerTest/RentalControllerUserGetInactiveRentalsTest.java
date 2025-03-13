@@ -101,4 +101,49 @@ public class RentalControllerUserGetInactiveRentalsTest {
 
         Mockito.verify(rentalService, times(1)).findRentalsByUserId(any());
     }
+
+    //unhappy path
+    @Test
+    void getInactiveRentals_whenUnauthenticated_thenReturnAnd401() throws Exception {
+        //given
+        given(rentalService.findRentalsByUserId(any())).willReturn(List.of());
+
+        //when
+        mockMvc.perform(get("/api/rentals/my/history"))
+                //then
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$").doesNotExist());
+
+        Mockito.verify(rentalService, times(0)).findRentalsByUserId(any());
+    }
+
+    //unhappy path
+    @Test
+    void getInactiveRentals_whenInactiveRentalsIsEmpty_thenReturnEmptyListAnd200() throws Exception {
+        //given
+        Role role = new Role("ROLE_USER");
+        role.setId(1L);
+
+        User user = new User("username", "password", List.of(role), List.of());
+        user.setId(1L);
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                user,
+                "password",
+                List.of(new SimpleGrantedAuthority("SCOPE_ROLE_USER"))
+        );
+
+        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+        securityContext.setAuthentication(authentication);
+        SecurityContextHolder.setContext(securityContext);
+
+        given(rentalService.findRentalsByUserId(any())).willReturn(List.of());
+
+        //when
+        mockMvc.perform(get("/api/rentals/my/history"))
+                //then
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$", Matchers.hasSize(0)));
+    }
 }
