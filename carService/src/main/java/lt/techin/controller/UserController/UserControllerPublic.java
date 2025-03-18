@@ -35,7 +35,7 @@ public class UserControllerPublic {
 
     @Operation(summary = "Create new user", description = "Creates new user (if creating Admin use all roles (id 1 for User and id 2 for Admin))")
     @PostMapping("/users")
-    public ResponseEntity<?> addUser(@Valid @RequestBody UserRequestDTO userRequestDTO, Authentication authentication) {
+    public ResponseEntity<?> addUser(@Valid @RequestBody UserRequestDTO userRequestDTO) {
         if (userService.existsUserByUsername(userRequestDTO.username())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User with this username already exists!");
         }

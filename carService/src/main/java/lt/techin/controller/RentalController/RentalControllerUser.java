@@ -6,7 +6,6 @@ import lt.techin.dto.*;
 import lt.techin.model.Car;
 import lt.techin.model.CarStatus;
 import lt.techin.model.Rental;
-import lt.techin.model.User;
 import lt.techin.service.CarService;
 import lt.techin.service.RentalService;
 import lt.techin.service.UserService;
