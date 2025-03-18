@@ -80,7 +80,7 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="202503160001-5" author="your-name">
+    <changeSet id="202503160001-5" author="Andrej Titkov">
         <createTable tableName="users_roles">
             <column name="user_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -97,11 +97,49 @@
                                  referencedColumnNames="id" onDelete="CASCADE"/>
     </changeSet>
 
-    <changeSet id="202503160001-6" author="your-name">
+    <changeSet id="202503160001-6" author="Andrej Titkov">
         <sql>
             INSERT INTO roles (name)
             VALUES ('ROLE_USER'),
                    ('ROLE_ADMIN');
+        </sql>
+    </changeSet>
+    <changeSet id="202503160001-7" author="Andrej Titkov">
+        <sql>
+            INSERT INTO users (username, password)
+            VALUES
+                ('user1', 'password123'),
+                ('admin', 'admin123'),
+                ('basic', 'basic123');
+        </sql>
+    </changeSet>
+
+    <changeSet id="202503160001-8" author="Andrej Titkov">
+        <sql>
+            INSERT INTO users_roles (user_id, role_id)
+            VALUES
+                (1, 1),
+                (1, 2),
+                (2, 2),
+                (3, 1);
+        </sql>
+    </changeSet>
+
+    <changeSet id="202503160001-9" author="Andrej Titkov">
+        <sql>
+            INSERT INTO cars (brand, model, year, status, daily_rent_price)
+            VALUES
+                ('Toyota', 'Camry', 2020, 'RENTED', 50.00),
+                ('Honda', 'Civic', 2021, 'AVAILABLE', 45.00),
+                ('Ford', 'Mustang', 2022, 'AVAILABLE', 75.00);
+        </sql>
+    </changeSet>
+
+    <changeSet id="202503160001-10" author="Andrej Titkov">
+        <sql>
+            INSERT INTO rentals (user_id, car_id, rental_start, rental_end, price)
+            VALUES
+                (3, 1, '2025-03-10', NULL, NULL);
         </sql>
     </changeSet>
 </databaseChangeLog>
