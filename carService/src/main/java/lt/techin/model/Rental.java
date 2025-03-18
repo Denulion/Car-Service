@@ -24,14 +24,14 @@ public class Rental {
 
     private LocalDate rentalStart;
     private LocalDate rentalEnd;
-    private BigDecimal totalPrice;
+    private BigDecimal price;
 
-    public Rental(User user, Car car, LocalDate rentalStart, LocalDate rentalEnd, BigDecimal totalPrice) {
+    public Rental(User user, Car car, LocalDate rentalStart, LocalDate rentalEnd, BigDecimal price) {
         this.user = user;
         this.car = car;
         this.rentalStart = rentalStart;
         this.rentalEnd = rentalEnd;
-        this.totalPrice = totalPrice;
+        this.price = price;
     }
 
     public Rental() {
@@ -78,12 +78,12 @@ public class Rental {
         this.rentalEnd = rentalEnd;
     }
 
-    public BigDecimal getTotalPrice() {
-        return totalPrice;
+    public BigDecimal getPrice() {
+        return price;
     }
 
-    public void setTotalPrice(BigDecimal totalPrice) {
-        this.totalPrice = totalPrice;
+    public void setPrice(BigDecimal totalPrice) {
+        this.price = totalPrice;
     }
 
     public long getTotalDays() {

@@ -24,16 +24,18 @@ public class RentalService {
     }
 
     public Rental save(Rental rental) {
+        rental.getCar().setStatus(CarStatus.RENTED);
         return rentalRepository.save(rental);
     }
 
-    public void calculateTotalPriceAndReturnCar(Rental rental) {
+    public void calculatePriceAndReturnCar(Rental rental) {
         rental.setRentalEnd(LocalDate.now());
 
         long totalDays = Math.max(1, rental.getTotalDays());
-        rental.setTotalPrice(BigDecimal.valueOf(totalDays).multiply(rental.getCar().getDailyRentPrice()));
+        rental.setPrice(BigDecimal.valueOf(totalDays).multiply(rental.getCar().getDailyRentPrice()));
 
         rental.getCar().setStatus(CarStatus.valueOf("AVAILABLE"));
+        rentalRepository.save(rental);
     }
 
     public List<Rental> findRentalsByCarId(Long id) {

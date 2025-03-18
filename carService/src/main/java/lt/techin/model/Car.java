@@ -18,7 +18,9 @@ public class Car {
     private String model;
     private int year;
 
-    private CarStatus status;
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "ENUM('AVAILABLE', 'RENTED') DEFAULT 'AVAILABLE'")
+    private CarStatus status = CarStatus.AVAILABLE;
     private BigDecimal dailyRentPrice;
 
     @OneToMany(mappedBy = "car")
@@ -28,18 +30,21 @@ public class Car {
         this.brand = brand;
         this.model = model;
         this.year = year;
-        this.status = status;
-        this.rentals = rentals;
+        this.status = (status != null) ? status : CarStatus.AVAILABLE;
+        this.rentals = rentals != null ? rentals : new ArrayList<>();
         this.dailyRentPrice = dailyRentPrice;
     }
 
-    public Car() {}
+    public Car() {
+    }
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {this.id = id;}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getBrand() {
         return brand;
@@ -57,7 +62,9 @@ public class Car {
         this.model = model;
     }
 
-    public int getYear() {return year;}
+    public int getYear() {
+        return year;
+    }
 
     public void setYear(int year) {
         this.year = year;
@@ -79,7 +86,11 @@ public class Car {
         this.rentals = rentals;
     }
 
-    public BigDecimal getDailyRentPrice() {return dailyRentPrice;}
+    public BigDecimal getDailyRentPrice() {
+        return dailyRentPrice;
+    }
 
-    public void setDailyRentPrice(BigDecimal dailyRentPrice) {this.dailyRentPrice = dailyRentPrice;}
+    public void setDailyRentPrice(BigDecimal dailyRentPrice) {
+        this.dailyRentPrice = dailyRentPrice;
+    }
 }

@@ -14,7 +14,6 @@ public record CarRequestDTO(@NotBlank
                             @NotBlank
                             @Length(min = 3, max = 255, message = "Car name is too long or too short!")
                             String model,
-                            @NotBlank
                             @Min(value = 1950, message = "Invalid date")
                             int year,
                             @DecimalMin(value = "0.0", inclusive = false)
