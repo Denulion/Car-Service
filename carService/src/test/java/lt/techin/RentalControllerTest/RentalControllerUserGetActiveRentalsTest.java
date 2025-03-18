@@ -102,18 +102,18 @@ public class RentalControllerUserGetActiveRentalsTest {
         mockMvc.perform(get("/api/rentals/my"))
                 //then
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$", Matchers.hasSize(2)))
-                .andExpect(jsonPath("[0].id").value(1))
-                .andExpect(jsonPath("[0].car.brand").value("Toyota"))
-                .andExpect(jsonPath("[0].car.model").value("Camry"))
-                .andExpect(jsonPath("[0].car.year").value(2020))
-                .andExpect(jsonPath("[0].rentalStartDate").value("2024-03-01"))
+                .andExpectAll((jsonPath("$").isArray()),
+                        jsonPath("$", Matchers.hasSize(2)),
+                        jsonPath("[0].id").value(1),
+                        jsonPath("[0].car.brand").value("Toyota"),
+                        jsonPath("[0].car.model").value("Camry"),
+                        jsonPath("[0].car.year").value(2020),
+                        jsonPath("[0].rentalStartDate").value("2024-03-01"),
 
-                .andExpect(jsonPath("[1].car.brand").value("Honda"))
-                .andExpect(jsonPath("[1].car.model").value("Civic"))
-                .andExpect(jsonPath("[1].car.year").value(2019))
-                .andExpect(jsonPath("[1].rentalStartDate").value("2024-03-05"));
+                        jsonPath("[1].car.brand").value("Honda"),
+                        jsonPath("[1].car.model").value("Civic"),
+                        jsonPath("[1].car.year").value(2019),
+                        jsonPath("[1].rentalStartDate").value("2024-03-05"));
 
         Mockito.verify(rentalService, times(1)).findRentalsByUserId(any());
     }
@@ -137,21 +137,32 @@ public class RentalControllerUserGetActiveRentalsTest {
     @Test
     void getActiveRentals_whenActiveRentalsIsEmpty_thenReturnEmptyListAnd200() throws Exception {
         //given
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("user_id", 1L);
+        claims.put("scope", "SCOPE_ROLE_USER");
+        claims.put("sub", "username");
+
+        Jwt jwt = new Jwt(
+                "token-value",
+                Instant.now(),
+                Instant.now().plusSeconds(3600),
+                Map.of("alg", "HS256"),
+                claims
+        );
+        Authentication authentication = new JwtAuthenticationToken(
+                jwt,
+                List.of(new SimpleGrantedAuthority("SCOPE_ROLE_USER")),
+                "username"
+        );
+        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+        securityContext.setAuthentication(authentication);
+        SecurityContextHolder.setContext(securityContext);
+
         Role role = new Role("ROLE_USER");
         role.setId(1L);
 
         User user = new User("username", "password", List.of(role), List.of());
         user.setId(1L);
-
-        Authentication authentication = new UsernamePasswordAuthenticationToken(
-                user,
-                "password",
-                List.of(new SimpleGrantedAuthority("SCOPE_ROLE_USER"))
-        );
-
-        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-        securityContext.setAuthentication(authentication);
-        SecurityContextHolder.setContext(securityContext);
 
         given(rentalService.findRentalsByUserId(any())).willReturn(List.of());
 
