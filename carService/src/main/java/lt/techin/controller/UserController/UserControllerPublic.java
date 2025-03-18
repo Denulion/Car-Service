@@ -10,6 +10,7 @@ import lt.techin.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,11 +36,6 @@ public class UserControllerPublic {
     @Operation(summary = "Create new user", description = "Creates new user (if creating Admin use all roles (id 1 for User and id 2 for Admin))")
     @PostMapping("/users")
     public ResponseEntity<?> addUser(@Valid @RequestBody UserRequestDTO userRequestDTO, Authentication authentication) {
-
-        if (authentication != null && authentication.isAuthenticated()) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You are already registered!");
-        }
-
         if (userService.existsUserByUsername(userRequestDTO.username())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User with this username already exists!");
         }
