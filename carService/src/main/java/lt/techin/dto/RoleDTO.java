@@ -1,7 +1,7 @@
 package lt.techin.dto;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
-public record RoleDTO(@NotBlank
+public record RoleDTO(@NotNull(message = "Role ID must not be null!")
                       long id) {
 }

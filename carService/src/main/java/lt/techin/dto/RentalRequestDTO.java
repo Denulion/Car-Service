@@ -6,9 +6,9 @@ import lt.techin.model.Car;
 
 import java.time.LocalDate;
 
-public record RentalRequestDTO(@NotNull
+public record RentalRequestDTO(@NotNull(message = "Car ID must be provided!")
                                long carId,
-                               @NotNull
+                               @NotNull(message = "Start date must be provided!")
                                @Future(message = "You can rent a car only from the next day")
                                LocalDate startDate) {
 }
