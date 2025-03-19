@@ -85,7 +85,7 @@ docker-compose down -v
 
 The database is initialized automatically via Liquibase, creating tables for users, roles, cars, and rentals with test data:
 
-**Users** (passwords are not hashed for testing; new users will have hashed passwords):
+**Users:**
 
 - `user1` (password: `password123`, roles: `ROLE_USER`, `ROLE_ADMIN`)
 - `admin` (password: `admin123`, role: `ROLE_ADMIN`)

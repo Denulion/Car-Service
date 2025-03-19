@@ -108,9 +108,9 @@
         <sql>
             INSERT INTO users (username, password)
             VALUES
-                ('user1', 'password123'),
-                ('admin', 'admin123'),
-                ('basic', 'basic123');
+                ('user1', '$2a$12$GZl5Qz1Msq0n8SpXH6RIzed11Gw5W1mkUV0v55A0QZCoCTga6Uu1u'),
+                ('admin', '$2a$12$rtz0oFlegEFkoSW8cY8HUuQ9cAxLlinCUE/rxP1HQOP6Dq67REvhO'),
+                ('basic', '$2a$12$MDyWXTki6QeDhh3lkgcLUuQKiCdLlo1n41NlrTI/2FhwJaKcO5wtu');
         </sql>
     </changeSet>
 
