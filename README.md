@@ -45,6 +45,8 @@ git clone https://github.com/your-username/car_service.git
 
 ### Run the application with Docker Compose:
 
+Run Docker Desktop
+
 Navigate to the project directory and start the containers:
 
 ```bash
@@ -154,7 +156,7 @@ Test endpoints manually using **Swagger UI** (preferred) or **Postman** (optiona
 
 ## Credits
 
-This project was developed by **Andrej Titkov** as part of a learning exercise in Java and Spring Boot.
+This project was developed by **Andrej Titkov** using Java and Spring Boot.
 
 Special thanks to:
 
