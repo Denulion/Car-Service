@@ -3,9 +3,6 @@ WORKDIR /build
 COPY pom.xml .
 COPY src ./src
 RUN mvn clean package -DskipTests
-RUN apt-get update && apt-get install -y openssl && \
-    openssl genpkey -algorithm RSA -out src/main/resources/app.key -pkeyopt rsa_keygen_bits:2048 && \
-    openssl rsa -pubout -in src/main/resources/app.key -out src/main/resources/app.pub
 
 FROM openjdk:21-jdk-slim
 
