@@ -104,7 +104,7 @@ public class RentalControllerUserPostReturnRentedCarTest {
         }).when(rentalService).calculatePriceAndReturnCar(rental);
 
         //when
-        mockMvc.perform(post("/api/rentals/return/1")
+        mockMvc.perform(post("/api/rentals/return/{id}", 1L)
                         .contentType(MediaType.APPLICATION_JSON))
                 //then
                 .andExpect(status().isOk())
@@ -120,5 +120,45 @@ public class RentalControllerUserPostReturnRentedCarTest {
 
         Mockito.verify(rentalService, times(1)).findRentalsByCarId(1L);
         Mockito.verify(rentalService, times(1)).calculatePriceAndReturnCar(rental);
+    }
+
+    //unhappy path
+    @Test
+    void returnRentedCar_whenNoCarFoundById_thenReturnAnd404() throws Exception {
+        //given
+        setupAuth();
+
+        Role role = new Role("ROLE_USER");
+        role.setId(1L);
+
+        User user = new User("username", "password", List.of(role), List.of());
+        user.setId(1L);
+
+        when(rentalService.findRentalsByCarId(1L)).thenReturn((List.of()));
+
+        //when
+        mockMvc.perform(post("/api/rentals/return/{id}", 1L)
+                .contentType(MediaType.APPLICATION_JSON))
+                //then
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$").value("You are not renting this car!"));
+
+        Mockito.verify(rentalService, times(1)).findRentalsByCarId(1L);
+        Mockito.verify(rentalService, times(0)).calculatePriceAndReturnCar(any());
+    }
+
+    //unhappy path
+    @Test
+    void returnRentedCar_whenUnauthenticated_thenReturnAnd401() throws Exception {
+        //given no auth
+
+        //when
+        mockMvc.perform(post("/api/rentals/return/{id}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON))
+                //then
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$").doesNotExist());
+
+        Mockito.verify(rentalService, times(0)).findRentalsByCarId(1L);
     }
 }

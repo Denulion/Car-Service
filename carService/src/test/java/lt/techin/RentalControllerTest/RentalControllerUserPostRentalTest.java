@@ -235,4 +235,30 @@ public class RentalControllerUserPostRentalTest {
 
         Mockito.verify(rentalService, never()).findAllRentalsByUserId(1L);
     }
+
+    //unhappy path
+    @Test
+    void postRental_whenRequestIsNotValid_thenReturnAnd400() throws Exception {
+        //given
+        setupAuth();
+
+        Role role = new Role("ROLE_USER");
+        role.setId(1L);
+
+        User user = new User("username", "password", List.of(role), List.of());
+        user.setId(1L);
+
+        RentalRequestDTO rentalRequestDTO = new RentalRequestDTO(0L, LocalDate.now());
+
+        // when
+        mockMvc.perform(post("/api/rentals")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(rentalRequestDTO)))
+                //then
+                .andExpect(status().isBadRequest());
+
+        verify(rentalService, never()).findAllRentalsByUserId(1L);
+        verify(carService, never()).findCarById(1L);
+        verify(userService, never()).findUserById(1L);
+    }
 }
