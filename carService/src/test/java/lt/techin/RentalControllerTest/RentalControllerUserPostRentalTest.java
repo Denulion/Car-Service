@@ -30,9 +30,9 @@ import java.time.LocalDate;
 import java.util.*;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = RentalControllerUser.class)
@@ -182,5 +182,57 @@ public class RentalControllerUserPostRentalTest {
         Mockito.verify(rentalService, times(1)).findAllRentalsByUserId(1L);
         Mockito.verify(carService, times(1)).findCarById(1L);
         Mockito.verify(userService, times(0)).findUserById(1L);
+    }
+
+    //unhappy path
+    @Test
+    void postRental_whenCarIsRented_thenReturnAnd400() throws Exception {
+        //given
+        setupAuth();
+
+        Role role = new Role("ROLE_USER");
+        role.setId(1L);
+
+        User user1 = new User("username", "password", List.of(role), List.of());
+        user1.setId(1L);
+
+        User user2 = new User("username1", "password1", List.of(role), List.of());
+        user2.setId(2L);
+
+        Car car1 = new Car("Toyota", "Camry", 2020, CarStatus.RENTED, new ArrayList<>(), BigDecimal.valueOf(50.00));
+        car1.setId(1L);
+
+        RentalRequestDTO rentalRequestDTO = new RentalRequestDTO(1L, LocalDate.now().plusDays(1));
+
+        when(rentalService.findAllRentalsByUserId(1L)).thenReturn(List.of());
+        when(carService.findCarById(1L)).thenReturn(Optional.of(car1));
+        when(userService.findUserById(1L)).thenReturn(Optional.of(user1));
+
+        //when
+        mockMvc.perform(post("/api/rentals")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(rentalRequestDTO)))
+                //then
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$").value("This car is already rented!"));
+
+        Mockito.verify(rentalService, times(1)).findAllRentalsByUserId(1L);
+        Mockito.verify(carService, times(1)).findCarById(1L);
+        Mockito.verify(userService, times(1)).findUserById(1L);
+        Mockito.verify(rentalService, times(0)).save(any());
+    }
+
+    //unhappy path
+    @Test
+    void postRental_whenUnauthenticated_thenReturnAnd401() throws Exception {
+        //given no auth
+
+        //when
+        mockMvc.perform(post("/api/rentals"))
+                //then
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$").doesNotExist());
+
+        Mockito.verify(rentalService, never()).findAllRentalsByUserId(1L);
     }
 }

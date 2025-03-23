@@ -83,6 +83,7 @@ public class RentalControllerUser {
     @PostMapping("/rentals/return/{id}")
     public ResponseEntity<?> returnRentedCar(@PathVariable long id, Authentication authentication) {
         long userId = ((Jwt) authentication.getPrincipal()).getClaim("user_id");
+
         Rental rental = rentalService.findRentalsByCarId(id).stream().filter(i -> i.getRentalEnd() == null).findFirst().orElse(null);
         if (rental == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("You are not renting this car!");
