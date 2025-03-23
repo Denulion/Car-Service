@@ -33,8 +33,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = RentalControllerUser.class)
 @Import(SecurityConfig.class)
@@ -52,10 +51,7 @@ public class RentalControllerUserPostRentalTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    //happy path
-    @Test
-    void postRental_whenValid_thenReturnAnd201() throws Exception {
-        //given
+    public void setupAuth() {
         Map<String, Object> claims = new HashMap<>();
         claims.put("user_id", 1L);
         claims.put("scope", "SCOPE_ROLE_USER");
@@ -76,6 +72,13 @@ public class RentalControllerUserPostRentalTest {
         SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
         securityContext.setAuthentication(authentication);
         SecurityContextHolder.setContext(securityContext);
+    }
+
+    //happy path
+    @Test
+    void postRental_whenValid_thenReturnAnd201() throws Exception {
+        //given
+        setupAuth();
 
         Role role = new Role("ROLE_USER");
         role.setId(1L);
@@ -88,10 +91,7 @@ public class RentalControllerUserPostRentalTest {
 
         RentalRequestDTO rentalRequestDTO = new RentalRequestDTO(1L, LocalDate.now().plusDays(1));
 
-        Rental rental = new Rental(user, car, rentalRequestDTO.startDate(), null, null);
-        rental.setId(1L);
-
-        when(rentalService.findAllRentalsByUserId(1L)).thenReturn(Collections.emptyList());
+        when(rentalService.findAllRentalsByUserId(1L)).thenReturn(List.of());
         when(carService.findCarById(1L)).thenReturn(Optional.of(car));
         when(userService.findUserById(1L)).thenReturn(Optional.of(user));
         when(rentalService.save(any(Rental.class))).thenAnswer(invocationOnMock -> {
@@ -103,8 +103,9 @@ public class RentalControllerUserPostRentalTest {
 
         //when
         mockMvc.perform(post("/api/rentals")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(rentalRequestDTO)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(rentalRequestDTO)))
+                //then
                 .andExpect(status().isCreated())
                 .andExpectAll((jsonPath("id").value(1L)),
                         (jsonPath("car.id").value(1L)),
@@ -112,5 +113,74 @@ public class RentalControllerUserPostRentalTest {
                         (jsonPath("car.status").value("RENTED")));
 
         Mockito.verify(rentalService, times(1)).save(any());
+    }
+
+    //unhappy path
+    @Test
+    void postRental_whenUserHas2Rentals_thenReturnAnd400() throws Exception {
+        //given
+        setupAuth();
+
+        Role role = new Role("ROLE_USER");
+        role.setId(1L);
+
+        User user = new User("username", "password", List.of(role), List.of());
+        user.setId(1L);
+
+        Car car1 = new Car("Toyota", "Camry", 2020, CarStatus.RENTED, new ArrayList<>(), BigDecimal.valueOf(50.00));
+        car1.setId(1L);
+        Car car2 = new Car("Audi", "Model 1", 2021, CarStatus.RENTED, new ArrayList<>(), BigDecimal.valueOf(50.00));
+        car2.setId(2L);
+        Car car3 = new Car("Audi", "Model 2", 2021, CarStatus.AVAILABLE, new ArrayList<>(), BigDecimal.valueOf(50.00));
+        car3.setId(3L);
+
+        Rental rental1 = new Rental(user, car1, LocalDate.of(2025, 3, 21), null, null);
+        rental1.setId(1L);
+        Rental rental2 = new Rental(user, car2, LocalDate.of(2025, 3, 20), null, null);
+        rental2.setId(2L);
+
+        RentalRequestDTO rentalRequestDTO = new RentalRequestDTO(3L, LocalDate.now().plusDays(1));
+
+        when(rentalService.findAllRentalsByUserId(1L)).thenReturn(List.of(rental1, rental2));
+
+        //when
+        mockMvc.perform(post("/api/rentals")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(rentalRequestDTO)))
+                //then
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("You already have 2 cars rented!"));
+
+        Mockito.verify(rentalService, times(1)).findAllRentalsByUserId(1L);
+    }
+
+    //unhappy path
+    @Test
+    void postRental_whenCarNotFound_thenReturnAnd404() throws Exception {
+        //given
+        setupAuth();
+
+        Role role = new Role("ROLE_USER");
+        role.setId(1L);
+
+        User user = new User("username", "password", List.of(role), List.of());
+        user.setId(1L);
+
+        RentalRequestDTO rentalRequestDTO = new RentalRequestDTO(1L, LocalDate.now().plusDays(1));
+
+        when(rentalService.findAllRentalsByUserId(1L)).thenReturn(List.of());
+        when(carService.findCarById(1L)).thenReturn(Optional.empty());
+
+        //when
+        mockMvc.perform(post("/api/rentals")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(rentalRequestDTO)))
+                //then
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Car not found"));
+
+        Mockito.verify(rentalService, times(1)).findAllRentalsByUserId(1L);
+        Mockito.verify(carService, times(1)).findCarById(1L);
+        Mockito.verify(userService, times(0)).findUserById(1L);
     }
 }
