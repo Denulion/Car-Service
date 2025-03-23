@@ -145,8 +145,8 @@ public class RentalControllerUserPostRentalTest {
 
         //when
         mockMvc.perform(post("/api/rentals")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(rentalRequestDTO)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(rentalRequestDTO)))
                 //then
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("You already have 2 cars rented!"));
@@ -173,8 +173,8 @@ public class RentalControllerUserPostRentalTest {
 
         //when
         mockMvc.perform(post("/api/rentals")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(rentalRequestDTO)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(rentalRequestDTO)))
                 //then
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("Car not found"));
@@ -210,8 +210,8 @@ public class RentalControllerUserPostRentalTest {
 
         //when
         mockMvc.perform(post("/api/rentals")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(rentalRequestDTO)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(rentalRequestDTO)))
                 //then
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$").value("This car is already rented!"));
