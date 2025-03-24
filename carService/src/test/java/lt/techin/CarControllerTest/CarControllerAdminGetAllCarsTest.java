@@ -1,10 +1,8 @@
 package lt.techin.CarControllerTest;
 
-import lt.techin.controller.CarController.CarControllerUser;
+import lt.techin.controller.CarController.CarControllerAdmin;
 import lt.techin.model.Car;
 import lt.techin.model.CarStatus;
-import lt.techin.model.Role;
-import lt.techin.model.User;
 import lt.techin.security.SecurityConfig;
 import lt.techin.service.CarService;
 import org.hamcrest.Matchers;
@@ -28,10 +26,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = CarControllerUser.class)
+@WebMvcTest(controllers = CarControllerAdmin.class)
 @Import(SecurityConfig.class)
 @AutoConfigureMockMvc
-public class CarControllerUserGetTest {
+public class CarControllerAdminGetAllCarsTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -40,18 +38,18 @@ public class CarControllerUserGetTest {
 
     //happy path
     @Test
-    @WithMockUser(authorities = "SCOPE_ROLE_USER")
-    void getAvailableCars_whenValid_thenReturnAnd200() throws Exception {
+    @WithMockUser(authorities = "SCOPE_ROLE_ADMIN")
+    void getCars_whenValid_thenReturnAnd200() throws Exception {
         //given
         Car car1 = new Car("Toyota", "Camry", 2020, CarStatus.AVAILABLE, new ArrayList<>(), BigDecimal.valueOf(50.00));
-        Car car2 = new Car("Honda", "Civic", 2019, CarStatus.AVAILABLE, new ArrayList<>(), BigDecimal.valueOf(45.00));
+        Car car2 = new Car("Honda", "Civic", 2019, CarStatus.RENTED, new ArrayList<>(), BigDecimal.valueOf(45.00));
         car1.setId(1L);
         car2.setId(2L);
 
         when(carService.findAllCars()).thenReturn(List.of(car1, car2));
 
         //when
-        mockMvc.perform(get("/api/cars/available"))
+        mockMvc.perform(get("/api/cars"))
                 //then
                 .andExpect(status().isOk())
                 .andExpectAll(
@@ -66,7 +64,7 @@ public class CarControllerUserGetTest {
                         jsonPath("[1].brand").value("Honda"),
                         jsonPath("[1].model").value("Civic"),
                         jsonPath("[1].year").value(2019),
-                        jsonPath("[1].status").value("AVAILABLE"),
+                        jsonPath("[1].status").value("RENTED"),
                         jsonPath("[1].dailyRentPrice").value(45.00)
                 );
 
@@ -75,10 +73,10 @@ public class CarControllerUserGetTest {
 
     //unhappy path
     @Test
-    void getAvailableCars_whenUnauthenticated_thenReturnAnd401() throws Exception {
+    void getCars_whenUnauthenticated_thenReturnAnd401() throws Exception {
         //given
         //when
-        mockMvc.perform(get("/api/cars/available"))
+        mockMvc.perform(get("/api/cars"))
                 //then
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$").doesNotExist());
@@ -88,13 +86,13 @@ public class CarControllerUserGetTest {
 
     //unhappy path
     @Test
-    @WithMockUser(authorities = "SCOPE_ROLE_USER")
-    void getAvailableCars_whenNoCarsAvailable_thenReturnAnd200() throws Exception {
+    @WithMockUser(authorities = "SCOPE_ROLE_ADMIN")
+    void getCars_whenNoCarsAvailable_thenReturnAnd200() throws Exception {
         //given
         when(carService.findAllCars()).thenReturn(List.of());
 
         //when
-        mockMvc.perform(get("/api/cars/available"))
+        mockMvc.perform(get("/api/cars"))
                 //then
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
