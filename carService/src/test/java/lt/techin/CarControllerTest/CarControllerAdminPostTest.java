@@ -57,12 +57,47 @@ public class CarControllerAdminPostTest {
                         .content(objectMapper.writeValueAsString(carRequestDTO)))
                 // then
                 .andExpect(status().isCreated())
-                .andExpectAll(jsonPath("brand").value("Audi"),
+                .andExpectAll(
+                        jsonPath("brand").value("Audi"),
                         jsonPath("model").value("Model 1"),
                         jsonPath("year").value(2015),
                         jsonPath("dailyRentPrice").value(50.00)
                 );
 
         Mockito.verify(carService, times(1)).saveCar(any(Car.class));
+    }
+
+    //unhappy path
+    @Test
+    @WithMockUser(authorities = "SCOPE_ROLE_ADMIN")
+    void addCar_whenInvalidRequest_thenReturnAnd400() throws Exception {
+        //given
+        CarRequestDTO carRequestDTO = new CarRequestDTO("Au", "Model аыафп", 1949, BigDecimal.valueOf(0.00));
+
+        //when
+        mockMvc.perform(post("/api/cars")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(carRequestDTO)))
+                //then
+                .andExpect(status().isBadRequest())
+                .andExpectAll(
+                        jsonPath("brand").value("Brand must be between 3 and 255 characters!"),
+                        jsonPath("model").value("Model can only contain letters, numbers, spaces, hyphens, slashes, apostrophes, commas, and periods."),
+                        jsonPath("year").value("Year must be 1950 or later"),
+                        jsonPath("dailyRentPrice").value("Daily rent price must be greater than 0 and have up to 10 digits with 2 decimal places!")
+                );
+
+        Mockito.verify(carService, times(0)).saveCar(any(Car.class));
+    }
+
+    //unhappy path
+    @Test
+    void addCar_whenUnauthenticated_thenReturnAnd401() throws Exception {
+        //given
+        //when
+        mockMvc.perform(post("/api/cars"))
+                //then
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$").doesNotExist());
     }
 }
