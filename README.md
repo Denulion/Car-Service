@@ -146,7 +146,7 @@ Explore all endpoints in Swagger UI at [http://localhost:8080/swagger-ui-custom.
 
 ## Testing
 
-Unit tests are included and require a running Docker container (via `docker-compose up`) for Liquibase to pass (rougtly done 50% of tests, still WIP, will be finished as soon as possible):
+Unit tests are included and require a running Docker container (via `docker-compose up`) for Liquibase to pass:
 
 ```bash
 mvn test
