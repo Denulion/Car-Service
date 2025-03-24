@@ -3,8 +3,6 @@ package lt.techin.CarControllerTest;
 import lt.techin.controller.CarController.CarControllerUser;
 import lt.techin.model.Car;
 import lt.techin.model.CarStatus;
-import lt.techin.model.Role;
-import lt.techin.model.User;
 import lt.techin.security.SecurityConfig;
 import lt.techin.service.CarService;
 import org.hamcrest.Matchers;
