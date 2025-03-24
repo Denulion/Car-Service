@@ -7,6 +7,7 @@ import lt.techin.model.Role;
 import lt.techin.model.User;
 import lt.techin.security.SecurityConfig;
 import lt.techin.service.CarService;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,5 +77,40 @@ public class CarControllerUserGetTest {
                 );
 
         Mockito.verify(carService, times(1)).findAllCars();
+    }
+
+    //unhappy path
+    @Test
+    void getAvailableRentals_whenUnauthenticated_thenReturnAnd401() throws Exception {
+        //given
+
+        //when
+        mockMvc.perform(get("/api/cars/available"))
+                //then
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$").doesNotExist());
+
+        Mockito.verify(carService, times(0)).findAllCars();
+    }
+
+    //unhappy path
+    @Test
+    @WithMockUser(authorities = "SCOPE_ROLE_USER")
+    void getAvailableRentals_whenNoCarsAvailable_thenReturnAnd200() throws Exception {
+        //given
+        Role role = new Role("ROLE_USER");
+        role.setId(1L);
+
+        User user = new User("username", "password", List.of(role), List.of());
+        user.setId(1L);
+
+        when(carService.findAllCars()).thenReturn(List.of());
+
+        //when
+        mockMvc.perform(get("/api/cars/available"))
+                //then
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$", Matchers.hasSize(0)));
     }
 }
