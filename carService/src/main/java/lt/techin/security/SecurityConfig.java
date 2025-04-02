@@ -71,6 +71,7 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    // might be unnecessary
     @Bean
     public JwtDecoder jwtDecoder() {
         return NimbusJwtDecoder.withPublicKey(key).build();

@@ -1,5 +1,6 @@
 package lt.techin.service;
 
+import jakarta.transaction.Transactional;
 import lt.techin.model.CarStatus;
 import lt.techin.model.Rental;
 import lt.techin.model.User;
@@ -12,6 +13,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+// TODO check DB transactions
+@Transactional
 @Service
 public class RentalService {
     private final RentalRepository rentalRepository;
@@ -42,8 +45,12 @@ public class RentalService {
         return rentalRepository.findAllByCarId(id);
     }
 
+    @Transactional // read transaction isolation levels
     public List<Rental> findRentalsByUserId(Long id) {
-        return rentalRepository.findAllByUserId(id);
+//        return rentalRepository.findAllByUserId(id);
+        return rentalRepository.findAllByUserIdAndRentalEndIsNull(id);
+        // another query between, but in other place
+        return rentalRepository.findAllByUserId(id); // <--
     }
 
     public List<Rental> findAllRentals() {
