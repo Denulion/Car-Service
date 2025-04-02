@@ -30,7 +30,7 @@ public class RentalControllerUser {
     private final CarService carService;
     private final UserService userService;
 
-    @Autowired
+    @Autowired // not needed
     public RentalControllerUser(RentalService rentalService, CarService carService, UserService userService) {
         this.rentalService = rentalService;
         this.carService = carService;
@@ -41,7 +41,9 @@ public class RentalControllerUser {
     @GetMapping("/rentals/my")
     public ResponseEntity<List<RentalResponseDTO>> getActiveRentals(Authentication authentication) {
         return ResponseEntity.ok().body(RentalResponseMapper.toRentalResponseDTOList(rentalService
-                .findRentalsByUserId(((Jwt) authentication.getPrincipal()).getClaim("user_id")).stream().filter(i -> i.getRentalEnd() == null).toList()));
+                .findRentalsByUserId(((Jwt) authentication.getPrincipal()).getClaim("user_id"))));
+//                .stream()
+//                .filter(i -> i.getRentalEnd() == null).toList()));
     }
 
     @Operation(summary = "Get all ended rentals for current user", description = "Retrieves all ended rentals for currently authenticated user")
@@ -57,14 +59,17 @@ public class RentalControllerUser {
 
         long userId = ((Jwt) authentication.getPrincipal()).getClaim("user_id");
 
+        // also in service
         if (rentalService.findAllRentalsByUserId(userId).size() >= 2) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("You already have 2 cars rented!");
         }
 
         Car car = carService.findCarById(rentalRequestDTO.carId())
+        Car car = carService.startRental(rentalRequestDTO.carId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Car not found"));
         Rental rental = RentalRequestMapper.toRental(rentalRequestDTO, userService.findUserById(userId).get(), car);
 
+        // also in service
         if (rental.getCar().getStatus().equals(CarStatus.valueOf("RENTED"))) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("This car is already rented!");
         }

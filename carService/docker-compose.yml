@@ -27,6 +27,7 @@ services:
     networks:
       - app-network
 
+# remove
   app:
     build:
       context: .

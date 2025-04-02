@@ -3,6 +3,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.31.xsd">
 
+<!--    make them also sql sripts-->
     <changeSet id="202503160001-1" author="Andrej Titkov">
         <createTable tableName="users">
             <column name="id" type="BIGINT" autoIncrement="true">
@@ -81,6 +82,11 @@
     </changeSet>
 
     <changeSet id="202503160001-5" author="Andrej Titkov">
+        <sql>
+            CREATE TABLE ...
+        </sql>
+
+
         <createTable tableName="users_roles">
             <column name="user_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -114,6 +120,7 @@
         </sql>
     </changeSet>
 
+    // extract to "create test data" migration
     <changeSet id="202503160001-8" author="Andrej Titkov">
         <sql>
             INSERT INTO users_roles (user_id, role_id)

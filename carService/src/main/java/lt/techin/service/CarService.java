@@ -23,8 +23,10 @@ public class CarService {
         return carRepository.findAll();
     }
 
+    // validate that car is found or throw
+//    public Car findCarById(long id) {
     public Optional<Car> findCarById(long id) {
-        return carRepository.findById(id);
+        return carRepository.findById(id).orElseThrow(() -> new CarNotFoundException());
     }
 
     public boolean existsCarById(long id) {
